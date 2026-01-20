@@ -100,11 +100,16 @@ model.materials(Outerpack_Shell, Radial_Shield, Overpack_Shield_Plate, Air, MPC,
 
 # Radial Surfaces
 
+r_baseplate_o = openmc.ZCylinder(r=336.55/2)
+
 r_outerpack_shell_o = openmc.ZCylinder(r=336.55/2, boundary_type='vacuum')
 r_outerpack_shell_i = openmc.ZCylinder(r=332.74/2)
 
-r_radial_shield_o = openmc.ZCylinder(r=332.74/2)
-r_radial_shield_i = openmc.ZCylinder(r=189.23/2)
+r_neutron_shield_o = openmc.ZCylinder(r=332.74/2)
+r_neutron_shield_i = openmc.ZCylinder(r=191.83/2)
+
+r_gamma_shield_o = openmc.ZCylinder(r=191.83/2)
+r_gamma_sheild_i = openmc.ZCylinder(r=189.23/2)
 
 r_inner_shell_o = openmc.ZCylinder(r=189.23/2)
 r_inner_shell_i = openmc.ZCylinder(r=186.69/2)
@@ -113,34 +118,39 @@ r_air_annulus_0 = openmc.ZCylinder(r=186.69/2)
 r_air_annulus_i = openmc.ZCylinder(r=176.53/2)
 
 r_mpc_o = openmc.ZCylinder(r=176.53/2)
-r_mpc_o = openmc.ZCylinder(r=173.99/2)
+r_mpc_i = openmc.ZCylinder(r=173.99/2)
 
 
 # Z Surface Heights
 
 z_bottom = openmc.ZPlane(z0=0.0, boundary_type='vacuum')
 
-z_concrete_base_b = openmc.ZPlane(z0=0)
-z_concrete_base_t = openmc.ZPlane(z0=10.16)
+z_steel_baseplate = openmc.ZPlane(z0=0)
+z_steel_baseplate = openmc.ZPlane(z0=10.16)
 
 z_bottom_shell_b = openmc.ZPlane(z0=10.16)
 z_bottom_shell_t = openmc.ZPlane(z0=13.97)
 
-z_radial_sheild_b = openmc.ZPlane(z0=13.97)
-z_radial_sheild_t = openmc.ZPlane(z0=573.405)
+z_radial_sheilds_b = openmc.ZPlane(z0=13.97)
+z_radial_sheilds_t = openmc.ZPlane(z0=573.405)
 
 z_top_shell_b = openmc.ZPlane(z0=573.405)
 z_top_shell_t = openmc.ZPlane(z0=578.485)
 
-z_concrete_top_b = openmc.ZPlane(z0=578.485)
-z_concrete_top_t = openmc.ZPlane(z0=587.375)
+z_steel_top_b = openmc.ZPlane(z0=578.485)
+z_steel_top_t = openmc.ZPlane(z0=587.375)
 
 z_top = openmc.ZPlane(z0=587.375, boundary_type='vacuum')
 
 # MPC Construction
 
-z_mpc_concrete_base_t = openmc.ZPlane(z0=62.23)
+r_mpc_neutron_gamma_sheilds = openmc.ZCylinder(r=1776.53)
+
+z_mpc_concrete_base_t = openmc.ZPlane(z0=52.07)
 z_mpc_concrete_base_b = openmc.ZPlane(z0=10.16)
+
+z_mpc_gamma_shield_b = openmc.ZPlane(z0=52.07)
+z_mpc_gamma_shield_t = openmc.ZPlane(z0=62.23)
 
 z_mpc_bottom_b = openmc.ZPlane(z0=62.23)
 z_mpc_bottom_t = openmc.ZPlane(z0=64.77)
@@ -152,9 +162,12 @@ z_mpc_top_b = openmc.ZPlane(z0=544.83)
 z_mpc_top_t = openmc.ZPlane(z0=547.37)
 
 z_mpc_air_annulus_b = openmc.ZPlane(z0=547.37)
-z_mpc_air_annulus_t = openmc.ZPlane(z0=549.91)
+z_mpc_air_annulus_t = openmc.ZPlane(z0=548.91)
 
-z_mpc_concrete_top_b = openmc.ZPlane(z0=549.91)
+z_mpc_gamma_top_b = openmc.ZPlane(z0=548.91)
+z_mpc_gamma_top_t = openmc.ZPlane(z0=551.18)
+
+z_mpc_concrete_top_b = openmc.ZPlane(z0=551.18)
 z_mpc_concrete_top_t = openmc.ZPlane(z0=578.485)
 
 ### Component Construction

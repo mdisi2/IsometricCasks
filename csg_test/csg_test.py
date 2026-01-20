@@ -1,17 +1,19 @@
 import openmc
 
-Fuel_Basket = openmc.Material('Fuel Basket') #Stainless steel with neutron absorbers (B4C, look up typical examples)
-Fuel_Basket.set_density('g/cm3', 10)
+Fuel_Basket = openmc.Material(name='Fuel Basket') #Stainless steel with neutron absorbers (B4C, look up typical examples)
+Fuel_Basket.set_density('g/cm3', 10.0)
+Fuel_Basket.add_element('Fe', 0.70)
 
+materials = openmc.Materials([Fuel_Basket])
 
 ### CSG
 
-Z_top = openmc.ZPlane(z=12.54)
-Z_bottom = openmc.ZPlane(z=0)
-X_back = openmc.XPlane(x=6.538)
-X_front = openmc.XPlane(x=0) # at origin
-Y_Left = openmc.YPlane(y=0) # at origin
-Y_Right = openmc.YPlane(y=6.538)
+Z_top = openmc.ZPlane(z0=12.54)
+Z_bottom = openmc.ZPlane(z0=0)
+X_back = openmc.XPlane(x0=6.538)
+X_front = openmc.XPlane(x0=0) # at origin
+Y_Left = openmc.YPlane(y0=0) # at origin
+Y_Right = openmc.YPlane(y0=6.538)
   
 # XZ Plane
 # #Left half octogon big (X,Z)
@@ -41,7 +43,7 @@ Big_Bottom_Half_Octogon = {(0.25, 0 , 12.54 - 0),
     
 ## Holder thing XZ (X,Y,Z)
 
-XYZ_Holder = [(0,0),
+XYZ_Points =    [(0,0),
                  (0.25,1.51),
                  (1.759,3.019),
                  (4.779,3.019),
@@ -72,33 +74,52 @@ XYZ_Holder = [(0,0),
     
 XZ_Plane = []
 
-for i in range(len(XYZ_Holder)):
-    x1, z1 = XYZ_Holder[i]
-    x2, z2 = XYZ_Holder[(i + 1) % len(XYZ_Holder)]
+for i in range(len(XYZ_Points)):
+    x1, z1 = XYZ_Points[i]
+    x2, z2 = XYZ_Points[(i + 1) % len(XYZ_Points)]
 
     a =  z2 - z1
     c = -(x2 - x1)
     d = -(a*x1 + c*z1)
 
-    line = openmc.Plane(a=a, c=c, d=d)
+    plane = openmc.Plane(a=a, c=c, d=d)
 
-    XZ_Plane.append(line) 
+    XZ_Plane.append(plane) 
 
-XZ_Region = openmc.Region()
+XZ_Region = +XZ_Plane[0]
 
-for line in XZ_Plane:
-    XZ_Region &= line
+for p in XZ_Plane[1:]:
+    XZ_Region &= +p
 
 XZ_Holder = XZ_Region & +Y_Left & -Y_Right
-YZ_Holder = XZ_Region & X_front & - X_back
+YZ_Holder = XZ_Region & +X_front & -X_back
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
     region=XZ_Holder & YZ_Holder,
     fill=Fuel_Basket)
 
+geometry = openmc.Geometry([holder_cell])
+
+settings = openmc.Settings()
 
 materials.export_to_xml()
 geometry.export_to_xml()
 settings.export_to_xml()
 
+plotxz = openmc.Plot()
+plotxz.basis = 'xz'
+plotxz.origin = (3, 0, 3)
+plotxz.width = (7, 5)
+plotxz.pixels = (700, 500)
+plotxz.color_by = 'material'
+
+plotyz = openmc.Plot()
+plotyz.basis = 'yz'
+plotyz.origin = (0, 3, 3)
+plotyz.width = (7, 5)
+plotyz.pixels = (700, 500)
+plotyz.color_by = 'material'
+
+plots = openmc.Plots([plotxz, plotyz])
+plots.export_to_xml()

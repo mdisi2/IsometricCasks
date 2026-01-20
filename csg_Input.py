@@ -182,8 +182,8 @@ outerpack_shell = openmc.Cell(name = 'Outerpack Shell',
                               ))
 
 def unit_cell_constructor():
-  top = openmc.ZPlane(z=12.54)
-  bottom = openmc.ZPlane(z=0)
+  Z_top = openmc.ZPlane(z=12.54)
+  Z_bottom = openmc.ZPlane(z=0)
   X_back = openmc.XPlane(x=6.538)
   X_front = openmc.XPlane(x=0) # at origin
   Y_Left = openmc.YPlane(y=0) # at origin

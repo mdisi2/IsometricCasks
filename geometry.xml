@@ -1,10 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <geometry>
-  <cell id="1" name="Unit Corr Cell" material="1" region="7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 5 -6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 4 -3" universe="1"/>
-  <surface id="3" type="x-plane" coeffs="6.538"/>
-  <surface id="4" type="x-plane" coeffs="0"/>
-  <surface id="5" type="y-plane" coeffs="0"/>
-  <surface id="6" type="y-plane" coeffs="6.538"/>
+  <cell id="1" name="Unit Corr Cell" material="1" region="7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33" universe="1"/>
   <surface id="7" type="plane" coeffs="1.51 0.0 -0.25 -0.0"/>
   <surface id="8" type="plane" coeffs="1.5090000000000001 0.0 -1.509 1.9013399999999998"/>
   <surface id="9" type="plane" coeffs="0.0 0.0 -3.02 9.11738"/>
@@ -32,5 +28,4 @@
   <surface id="31" type="plane" coeffs="-1.509 0.0 1.5090000000000001 -2.6271690000000003"/>
   <surface id="32" type="plane" coeffs="-1.7409999999999999 0.0 1.51 -2.2800999999999996"/>
   <surface id="33" type="plane" coeffs="-1.51 0.0 0 -0.0"/>
-  <surface id="34" type="plane" coeffs="0 0.0 0 0"/>
 </geometry>

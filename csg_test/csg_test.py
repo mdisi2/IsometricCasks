@@ -69,8 +69,7 @@ XYZ_Points =    [(0,0),
                  (3.019, 7.78),
                  (3.019, 4.76),
                  (1.51,3.251),
-                 (0,1.51),
-                 (0,0)]
+                 (0,1.51)]
     
 XZ_Plane = []
 
@@ -82,21 +81,22 @@ for i in range(len(XYZ_Points)):
     c = -(x2 - x1)
     d = -(a*x1 + c*z1)
 
-    plane = openmc.Plane(a=a, c=c, d=d)
-
-    XZ_Plane.append(plane) 
+    XZ_Plane.append(openmc.Plane(a=a, c=c, d=d)) 
 
 XZ_Region = +XZ_Plane[0]
-
 for p in XZ_Plane[1:]:
     XZ_Region &= +p
 
-XZ_Holder = XZ_Region & +Y_Left & -Y_Right
-YZ_Holder = XZ_Region & +X_front & -X_back
+XZ_Holder = XZ_Region
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
-    region=XZ_Holder & YZ_Holder,
+    region= XZ_Holder,
+    fill= Fuel_Basket)
+
+cell = openmc.Cell(
+    name='debug',
+    region = -openmc.Sphere(r=10),
     fill=Fuel_Basket)
 
 geometry = openmc.Geometry([holder_cell])
@@ -109,17 +109,19 @@ settings.export_to_xml()
 
 plotxz = openmc.Plot()
 plotxz.basis = 'xz'
-plotxz.origin = (3, 0, 3)
+plotxz.origin = (3, 3, 6)
 plotxz.width = (7, 5)
 plotxz.pixels = (700, 500)
-plotxz.color_by = 'material'
+plotxz.color_by = 'cell'
 
-plotyz = openmc.Plot()
-plotyz.basis = 'yz'
-plotyz.origin = (0, 3, 3)
-plotyz.width = (7, 5)
-plotyz.pixels = (700, 500)
-plotyz.color_by = 'material'
+# plotyz = openmc.Plot()
+# plotyz.basis = 'yz'
+# plotyz.origin = (3, 3, 6)
+# plotyz.width = (7, 5)
+# plotyz.pixels = (700, 500)
+# plotyz.color_by = 'cell'
 
-plots = openmc.Plots([plotxz, plotyz])
+plots = openmc.Plots([plotxz])
 plots.export_to_xml()
+
+print(XZ_Plane)

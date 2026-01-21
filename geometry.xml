@@ -1,8 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <geometry>
-  <cell id="1" name="Unit Corr Cell" material="1" region="((-7 -8 9 10) | (11 -12 -13 -14) | (-15 -16 17 -18) | (19 20 -21 -22) | (-23 -24 25 -26 -27 -28) | (-29 -30 31 -32) | (-33 -34 -35 36) | (-37 -38 39 40) | (-41 -42 -43 -44 -45 46) | (-47 -48 -49 -50) | (-51 -52 -53 -54)) 5 -6 (145 | 146 | -147 | 148 | 149 | -150) (-139 | -140 | 141 | 142 | 143 | 144) (-127 | 128 | -129 | 130 | 131 | 132) (133 | -134 | 135 | 136 | -137 | 138)" universe="1"/>
-  <cell id="2" name="Unit Corr Cell" material="1" region="((-79 -80 81 82) | (83 -84 -85 -86) | (-87 -88 89 -90) | (91 92 -93 -94) | (-95 -96 97 -98 -99 -100) | (-101 -102 103 -104) | (-105 -106 -107 108) | (-109 -110 111 112) | (-113 -114 -115 -116 -117 118) | (-119 -120 -121 -122) | (-123 -124 -125 -126)) 4 -3 (73 | 74 | -75 | 76 | 77 | -78) (-67 | -68 | 69 | 70 | 71 | 72) (-55 | 56 | -57 | 58 | 59 | 60) (61 | -62 | 63 | 64 | -65 | 66)" universe="1"/>
-  <cell id="3" name="Pebble Lattice" material="1" region="-151 -152 -153 -154 -156 -156" universe="1"/>
+  <cell id="1" name="Unit Corr Cell" material="1" region="(((-7 -8 9 10) | (11 -12 -13 -14) | (-15 -16 17 -18) | (19 20 -21 -22) | (-23 -24 25 -26 -27 -28) | (-29 -30 31 -32) | (-33 -34 -35 36) | (-37 -38 39 40) | (-41 -42 -43 -44 -45 46) | (-47 -48 -49 -50) | (-51 -52 -53 -54)) 5 -6 (145 | 146 | -147 | 148 | 149 | -150) (-139 | -140 | 141 | 142 | 143 | 144) (-127 | 128 | -129 | 130 | 131 | 132) (133 | -134 | 135 | 136 | -137 | 138)) | (((-79 -80 81 82) | (83 -84 -85 -86) | (-87 -88 89 -90) | (91 92 -93 -94) | (-95 -96 97 -98 -99 -100) | (-101 -102 103 -104) | (-105 -106 -107 108) | (-109 -110 111 112) | (-113 -114 -115 -116 -117 118) | (-119 -120 -121 -122) | (-123 -124 -125 -126)) 4 -3 (73 | 74 | -75 | 76 | 77 | -78) (-67 | -68 | 69 | 70 | 71 | 72) (-55 | 56 | -57 | 58 | 59 | 60) (61 | -62 | 63 | 64 | -65 | 66))" universe="1"/>
+  <cell id="2" name="Pebble T" material="2" region="-151 2 -1" universe="1"/>
+  <cell id="3" name="Pebble B" material="2" region="-152 2 -1" universe="1"/>
+  <cell id="4" name="Pebble TP" material="2" region="-153 5 -6" universe="1"/>
+  <cell id="5" name="Pebble TB" material="2" region="-154 5 -6" universe="1"/>
+  <cell id="6" name="Pebble L" material="2" region="-155 4 -3" universe="1"/>
+  <cell id="7" name="Pebble R" material="2" region="-156 4 -3" universe="1"/>
+  <surface id="1" type="z-plane" coeffs="12.54"/>
+  <surface id="2" type="z-plane" coeffs="0"/>
   <surface id="3" type="x-plane" coeffs="6.538"/>
   <surface id="4" type="x-plane" coeffs="0"/>
   <surface id="5" type="y-plane" coeffs="0"/>
@@ -151,9 +157,10 @@
   <surface id="148" type="plane" coeffs="0.0 -0.7071067811865479 -0.7071067811865472 -8.343860018001259"/>
   <surface id="149" type="plane" coeffs="0.0 0.7071067811865479 -0.7071067811865472 -3.7207958826036074"/>
   <surface id="150" type="z-plane" coeffs="10.040999999999999"/>
-  <surface id="151" type="sphere" coeffs="3.269 3.269 6.27 3"/>
+  <surface id="151" type="sphere" coeffs="3.269 3.269 12.54 3"/>
   <surface id="152" type="sphere" coeffs="3.269 3.269 0 3"/>
   <surface id="153" type="sphere" coeffs="3.269 6.538 6.27 3"/>
   <surface id="154" type="sphere" coeffs="3.269 0 6.27 3"/>
+  <surface id="155" type="sphere" coeffs="0 3.269 6.27 3"/>
   <surface id="156" type="sphere" coeffs="6.538 3.269 6.27 3"/>
 </geometry>

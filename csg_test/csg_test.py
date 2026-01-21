@@ -4,7 +4,11 @@ Fuel_Basket = openmc.Material(name='Fuel Basket') #Stainless steel with neutron 
 Fuel_Basket.set_density('g/cm3', 10.0)
 Fuel_Basket.add_element('Fe', 0.70)
 
-materials = openmc.Materials([Fuel_Basket])
+PebbleMat = openmc.Material(name='Pebble Mat') #Stainless steel with neutron absorbers (B4C, look up typical examples)
+PebbleMat.set_density('g/cm3', 10.0)
+PebbleMat.add_element('Fe', 0.70)
+
+materials = openmc.Materials([Fuel_Basket, PebbleMat])
 
 ### CSG
 
@@ -97,34 +101,53 @@ yz_region  = -YZ_Polygon & +X_front & -X_back  & +XZ_TOctogon & +XZ_BOctogon & +
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
-    region= xy_region,
-    fill= Fuel_Basket)
-
-holder_cell2 = openmc.Cell(
-    name = 'Unit Corr Cell',
-    region= yz_region,
+    region= xy_region | yz_region,
     fill= Fuel_Basket)
 
 
 # Triso Pebble Construction
 
-T_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=12.54/2, r=3)
+T_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=12.54, r=3)
 B_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=0, r=3)
 #With XY plane as refrence
 XY_TSphere = openmc.Sphere(x0=6.538/2, y0=6.538, z0=12.54/2, r=3)
 XY_BSphere = openmc.Sphere(x0=6.538/2, y0=0, z0=12.54/2, r=3)
 XY_LSphere = openmc.Sphere(x0=0, y0= 6.538/2, z0=12.54/2, r=3)
-XY_LSphere = openmc.Sphere(x0=6.538, y0= 6.538/2, z0=12.54/2, r=3)
+XY_RSphere = openmc.Sphere(x0=6.538, y0= 6.538/2, z0=12.54/2, r=3)
 
-Pebble_Cell = openmc.Cell(
-    name = 'Pebble Lattice',
-    region= -T_sphere & -B_sphere & -XY_TSphere & -XY_BSphere & -XY_LSphere & -XY_LSphere, #& +Z_bottom & + Z_top & +X_front & +X_back & +Y_Left & +Y_Right,
-    fill= Fuel_Basket)
+PebbleT = openmc.Cell(
+    name = 'Pebble T',
+    region= -T_sphere & +Z_bottom & -Z_top,
+    fill= PebbleMat)
 
+PebbleB = openmc.Cell(
+    name = 'Pebble B',
+    region= -B_sphere & +Z_bottom & -Z_top,
+    fill= PebbleMat)
+
+PebbleTP = openmc.Cell(
+    name = 'Pebble TP',
+    region= -XY_TSphere & +Y_Left & -Y_Right,
+    fill= PebbleMat)
+
+PebbleTB = openmc.Cell(
+    name = 'Pebble TB',
+    region= -XY_BSphere & +Y_Left & -Y_Right,
+    fill= PebbleMat)
+
+PebbleL = openmc.Cell(
+    name = 'Pebble L',
+    region= -XY_LSphere & +X_front & -X_back,
+    fill= PebbleMat)
+
+PebbleR = openmc.Cell(
+    name = 'Pebble R',
+    region= -XY_RSphere & +X_front & -X_back,
+    fill= PebbleMat)
 
 ## XML and Plotting
 
-geometry = openmc.Geometry([holder_cell, holder_cell2, Pebble_Cell])
+geometry = openmc.Geometry([holder_cell, PebbleT, PebbleB, PebbleTP, PebbleTB, PebbleL, PebbleR])
 settings = openmc.Settings()
 
 materials.export_to_xml()
@@ -133,25 +156,33 @@ settings.export_to_xml()
 
 plotxz = openmc.Plot()
 plotxz.basis = 'xz'
-plotxz.origin = (6.538/2, 0, 12.54/2)
+plotxz.origin = (6.538/2, 6.538/2, 12.54/2)
 plotxz.width = (10, 15)
-plotxz.pixels = (100, 150)
-plotxz.color_by = 'cell'
+plotxz.pixels = (300, 450)
+plotxz.color_by = 'material'
 
 plotyz = openmc.Plot()
 plotyz.basis = 'yz'
 plotyz.origin = (6.538/2, 6.538/2, 12.54/2)
 plotyz.width = (10, 15)
-plotyz.pixels = (100, 150)
-plotyz.color_by = 'cell'
+plotyz.pixels = (300, 450)
+plotyz.color_by = 'material'
 
 plotxy = openmc.Plot()
 plotxy.basis = 'xy'
 plotxy.origin = (6.538/2, 6.538/2, 12.54/2)
-plotxy.width = (10, 15)
-plotxy.pixels = (100, 150)
-plotxy.color_by = 'cell'
+plotxy.width = (15, 15)
+plotxy.pixels = (450, 450)
+plotxy.color_by = 'material'
 
 
-plots = openmc.Plots([plotxz,plotxy,plotyz,])
+plotxy3 = openmc.Plot()
+plotxy3.basis = 'xy'
+plotxy3.origin = (6.538/2, 6.538/2, 10)
+plotxy3.width = (15, 15)
+plotxy3.pixels = (450, 450)
+plotxy3.color_by = 'material'
+
+
+plots = openmc.Plots([plotxz,plotxy,plotyz,plotxy3])
 plots.export_to_xml()

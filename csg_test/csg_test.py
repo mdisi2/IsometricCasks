@@ -15,35 +15,11 @@ X_front = openmc.XPlane(x0=0) # at origin
 Y_Left = openmc.YPlane(y0=0) # at origin
 Y_Right = openmc.YPlane(y0=6.538)
   
-# XZ Plane
-# #Left half octogon big (X,Z)
-Big_Left_Half_Octogon = {(0,     0 , 3.251),
-               (1.51,  0 , 3.251),
-               (3.019, 0 , 4.76),
-               (3.019, 0 , 7.78),
-               (1.51,  0 , 9.289)}
-    
-Big_Bottom_Half_Octogon = {(0.25, 0 , 0),
-                              (0.25, 0 , 1.51),
-                              (1.759, 0 , 3.019),
-                              (4.779, 0, 3.019),
-                              (6.288, 0 , 1.51)}
-    
-Big_Right_Half_Octogon = {(6.538, 0 , 3.251),
-                              (5.028, 0 , 3.251),
-                              (3.519, 0 , 4.76),
-                              (3.519, 0 , 7.78),
-                              (5.028, 0 , 9.289)}
-    
-Big_Bottom_Half_Octogon = {(0.25, 0 , 12.54 - 0),
-                              (0.25, 0 ,  12.54 - 1.51),
-                              (1.759, 0 , 12.54 - 3.019),
-                              (4.779, 0, 12.54 - 3.019),
-                              (6.288, 0 , 12.54 - 1.51)}
     
 ## Holder thing XZ (X,Y,Z)
 
 XYZ_Points =    [(0,0),
+                 (0.25,0),
                  (0.25,1.51),
                  (1.759,3.019),
                  (4.779,3.019),
@@ -69,37 +45,26 @@ XYZ_Points =    [(0,0),
                  (3.019, 7.78),
                  (3.019, 4.76),
                  (1.51,3.251),
+                 (0,3.251),
                  (0,1.51)]
-    
-XZ_Plane = []
 
-for i in range(len(XYZ_Points)):
-    x1, z1 = XYZ_Points[i]
-    x2, z2 = XYZ_Points[(i + 1) % len(XYZ_Points)]
+XZ_Polygon = openmc.model.Polygon(basis='xz', points=XYZ_Points)
+xy_region  = -XZ_Polygon & +Y_Left & -Y_Right
 
-    a =  z2 - z1
-    c = -(x2 - x1)
-    d = -(a*x1 + c*z1)
-
-    XZ_Plane.append(openmc.Plane(a=a, c=c, d=d)) 
-
-XZ_Region = +XZ_Plane[0]
-for p in XZ_Plane[1:]:
-    XZ_Region &= +p
-
-XZ_Holder = XZ_Region
+YZ_Polygon = openmc.model.Polygon(basis='yz', points=XYZ_Points)
+yz_region  = -YZ_Polygon & +X_front & -X_back
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
-    region= XZ_Holder,
+    region= xy_region,
     fill= Fuel_Basket)
 
-cell = openmc.Cell(
-    name='debug',
-    region = -openmc.Sphere(r=10),
-    fill=Fuel_Basket)
+holder_cell2 = openmc.Cell(
+    name = 'Unit Corr Cell',
+    region= yz_region,
+    fill= Fuel_Basket)
 
-geometry = openmc.Geometry([holder_cell])
+geometry = openmc.Geometry([holder_cell, holder_cell2])
 
 settings = openmc.Settings()
 
@@ -109,19 +74,25 @@ settings.export_to_xml()
 
 plotxz = openmc.Plot()
 plotxz.basis = 'xz'
-plotxz.origin = (3, 3, 6)
-plotxz.width = (7, 5)
-plotxz.pixels = (700, 500)
+plotxz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxz.width = (10, 15)
+plotxz.pixels = (100, 150)
 plotxz.color_by = 'cell'
 
-# plotyz = openmc.Plot()
-# plotyz.basis = 'yz'
-# plotyz.origin = (3, 3, 6)
-# plotyz.width = (7, 5)
-# plotyz.pixels = (700, 500)
-# plotyz.color_by = 'cell'
+plotyz = openmc.Plot()
+plotyz.basis = 'yz'
+plotyz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotyz.width = (10, 15)
+plotyz.pixels = (100, 150)
+plotyz.color_by = 'cell'
 
-plots = openmc.Plots([plotxz])
+plotxy = openmc.Plot()
+plotxy.basis = 'xy'
+plotxy.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxy.width = (10, 15)
+plotxy.pixels = (100, 150)
+plotxy.color_by = 'cell'
+
+
+plots = openmc.Plots([plotxz,plotxy,plotyz,])
 plots.export_to_xml()
-
-print(XZ_Plane)

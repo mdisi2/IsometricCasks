@@ -7,12 +7,12 @@
   </plot>
   <plot id="3" color_by="cell" type="slice" basis="xy">
     <pixels>100 150</pixels>
-    <origin>3.269 6.538 9.3</origin>
+    <origin>3.269 3.269 6.27</origin>
     <width>10 15</width>
   </plot>
   <plot id="2" color_by="cell" type="slice" basis="yz">
     <pixels>100 150</pixels>
-    <origin>0 3.269 6.27</origin>
+    <origin>3.269 3.269 6.27</origin>
     <width>10 15</width>
   </plot>
 </plots>

@@ -105,8 +105,26 @@ holder_cell2 = openmc.Cell(
     region= yz_region,
     fill= Fuel_Basket)
 
-geometry = openmc.Geometry([holder_cell, holder_cell2])
 
+# Triso Pebble Construction
+
+T_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=12.54/2, r=3)
+B_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=0, r=3)
+#With XY plane as refrence
+XY_TSphere = openmc.Sphere(x0=6.538/2, y0=6.538, z0=12.54/2, r=3)
+XY_BSphere = openmc.Sphere(x0=6.538/2, y0=0, z0=12.54/2, r=3)
+XY_LSphere = openmc.Sphere(x0=0, y0= 6.538/2, z0=12.54/2, r=3)
+XY_LSphere = openmc.Sphere(x0=6.538, y0= 6.538/2, z0=12.54/2, r=3)
+
+Pebble_Cell = openmc.Cell(
+    name = 'Pebble Lattice',
+    region= -T_sphere & -B_sphere & -XY_TSphere & -XY_BSphere & -XY_LSphere & -XY_LSphere, #& +Z_bottom & + Z_top & +X_front & +X_back & +Y_Left & +Y_Right,
+    fill= Fuel_Basket)
+
+
+## XML and Plotting
+
+geometry = openmc.Geometry([holder_cell, holder_cell2, Pebble_Cell])
 settings = openmc.Settings()
 
 materials.export_to_xml()
@@ -122,14 +140,14 @@ plotxz.color_by = 'cell'
 
 plotyz = openmc.Plot()
 plotyz.basis = 'yz'
-plotyz.origin = (0, 6.538/2, 12.54/2)
+plotyz.origin = (6.538/2, 6.538/2, 12.54/2)
 plotyz.width = (10, 15)
 plotyz.pixels = (100, 150)
 plotyz.color_by = 'cell'
 
 plotxy = openmc.Plot()
 plotxy.basis = 'xy'
-plotxy.origin = (6.538/2, 6.538/2, 9.3)
+plotxy.origin = (6.538/2, 6.538/2, 12.54/2)
 plotxy.width = (10, 15)
 plotxy.pixels = (100, 150)
 plotxy.color_by = 'cell'

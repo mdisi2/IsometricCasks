@@ -2,22 +2,17 @@
 <plots>
   <plot id="1" color_by="cell" type="slice" basis="xz">
     <pixels>100 150</pixels>
-    <origin>3.269 3.269 6.27</origin>
+    <origin>3.269 0 6.27</origin>
     <width>10 15</width>
   </plot>
   <plot id="3" color_by="cell" type="slice" basis="xy">
     <pixels>100 150</pixels>
-    <origin>3.269 3.269 6.27</origin>
+    <origin>3.269 6.538 9.3</origin>
     <width>10 15</width>
   </plot>
   <plot id="2" color_by="cell" type="slice" basis="yz">
     <pixels>100 150</pixels>
-    <origin>3.269 3.269 6.27</origin>
+    <origin>0 3.269 6.27</origin>
     <width>10 15</width>
-  </plot>
-  <plot id="4" color_by="cell" type="voxel">
-    <pixels>400 400 200</pixels>
-    <origin>0.0 0.0 0.0</origin>
-    <width>100.0 100.0 50.0</width>
   </plot>
 </plots>

@@ -48,11 +48,52 @@ XYZ_Points =    [(0,0),
                  (0,3.251),
                  (0,1.51)]
 
+x_distance = 6.538
+
+XZ_left_octogon_pts = [(0,8.769),
+                       (1.51,8.769),
+                       (2.499,7.78),
+                       (2.499,4.76),
+                       (1.51,3.771),
+                       (0,3.771)]
+
+XZ_right_octogon_pts = [(x_distance - 0,8.769),
+                       (x_distance - 1.51,8.769),
+                       (x_distance - 2.499,7.78),
+                       (x_distance -2.499,4.76),
+                       (x_distance - 1.51, 3.771),
+                       (x_distance - 0, 3.771)]
+
+XZ_bottom_pts = [(0.77,0),
+                 (0.77,1.51),
+                 (1.759,2.499),
+                 (4.779,2.499),
+                 (5.768,1.51),
+                 (5.768,0)]
+
+XZ_top_pts = [(0.77,12.54 - 0),
+                 (0.77,12.54 - 1.51),
+                 (1.759,12.54 - 2.499),
+                 (4.779,12.54 - 2.499),
+                 (5.768,12.54 - 1.51),
+                 (5.768,12.54 - 0)]
+
+
 XZ_Polygon = openmc.model.Polygon(basis='xz', points=XYZ_Points)
-xy_region  = -XZ_Polygon & +Y_Left & -Y_Right
+XZ_LOctogon = openmc.model.Polygon(basis='xz', points=XZ_left_octogon_pts)
+XZ_ROctogon = openmc.model.Polygon(basis='xz', points=XZ_right_octogon_pts)
+XZ_BOctogon = openmc.model.Polygon(basis='xz', points=XZ_bottom_pts)
+XZ_TOctogon = openmc.model.Polygon(basis='xz', points=XZ_top_pts)
 
 YZ_Polygon = openmc.model.Polygon(basis='yz', points=XYZ_Points)
-yz_region  = -YZ_Polygon & +X_front & -X_back
+YZ_LOctogon = openmc.model.Polygon(basis='yz', points=XZ_left_octogon_pts)
+YZ_ROctogon = openmc.model.Polygon(basis='yz', points=XZ_right_octogon_pts)
+YZ_BOctogon = openmc.model.Polygon(basis='yz', points=XZ_bottom_pts)
+YZ_TOctogon = openmc.model.Polygon(basis='yz', points=XZ_top_pts)
+
+xy_region  = -XZ_Polygon & +Y_Left & -Y_Right & +YZ_TOctogon & +YZ_BOctogon & +YZ_LOctogon & +YZ_ROctogon
+
+yz_region  = -YZ_Polygon & +X_front & -X_back  & +XZ_TOctogon & +XZ_BOctogon & +XZ_LOctogon & +XZ_ROctogon
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
@@ -74,21 +115,21 @@ settings.export_to_xml()
 
 plotxz = openmc.Plot()
 plotxz.basis = 'xz'
-plotxz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxz.origin = (6.538/2, 0, 12.54/2)
 plotxz.width = (10, 15)
 plotxz.pixels = (100, 150)
 plotxz.color_by = 'cell'
 
 plotyz = openmc.Plot()
 plotyz.basis = 'yz'
-plotyz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotyz.origin = (0, 6.538/2, 12.54/2)
 plotyz.width = (10, 15)
 plotyz.pixels = (100, 150)
 plotyz.color_by = 'cell'
 
 plotxy = openmc.Plot()
 plotxy.basis = 'xy'
-plotxy.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxy.origin = (6.538/2, 6.538/2, 9.3)
 plotxy.width = (10, 15)
 plotxy.pixels = (100, 150)
 plotxy.color_by = 'cell'

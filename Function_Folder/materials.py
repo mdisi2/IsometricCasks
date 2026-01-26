@@ -35,6 +35,7 @@ S_316.add_element('Fe')#, 65.485 / 100, percent_type='wo' )
 ### Overpack
 ############
 
+# Type II Portland Cement
 Concrete = openmc.Material('Concrete')
 
 # Atomic number | Fraction by weight

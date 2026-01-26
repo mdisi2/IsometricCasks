@@ -1,6 +1,5 @@
 ### Holds helpful functions for more readable code
 
-
 import openmc 
 
 def extrude(coords,start,plane1,plane2):

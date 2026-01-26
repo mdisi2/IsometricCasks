@@ -1,11 +1,14 @@
-### Holds messy materials like alloyx
+### Holds messy materials like alloyx ss316
 
 import openmc
 
 
-Alloy_X = openmc.Material(name='Stainless Steel 316')
+##########
+### MPC Canister Stainless Steal S_316
+##########
+S_316 = openmc.Material(name='Stainless Steel 316')
 
-# Ca Carbon - 0.08% maximum
+# C Carbon - 0.08% maximum
 # Mn Manganese - 2.00% maximum
 # Si Silicon - 0.75% maximum
 # Cr Chromium - 16.00 - 18.00%
@@ -16,18 +19,100 @@ Alloy_X = openmc.Material(name='Stainless Steel 316')
 # N Nitrogen - 0.10% max
 # Fe Iron - Balance
 
-Alloy_X.set_density('g/cm3',8.027)
-Alloy_X.add_element('Ca', 0.08 / 100)
-Alloy_X.add_element('Mn', 2 / 100)
-Alloy_X.add_element('Si', 0.75 / 100)
-Alloy_X.add_element('Cr', 17 / 100)
-Alloy_X.add_element('Ni', 12 / 100)
-Alloy_X.add_element('Mo', 2.5 / 100)
-Alloy_X.add_element('P', 0.045 / 100)
-Alloy_X.add_element('S', 0.030 / 100)
-Alloy_X.add_element('N', 0.1 / 100)
-Alloy_X.add_element('Fe', 65.485 )
+S_316.set_density('g/cm3',8.027, percent_type='wo')
+S_316.add_element('C', 0.08 / 100 , percent_type='wo')
+S_316.add_element('Mn', 2 / 100, percent_type='wo')
+S_316.add_element('Si', 0.75 / 100, percent_type='wo')
+S_316.add_element('Cr', 17 / 100, percent_type='wo')
+S_316.add_element('Ni', 12 / 100, percent_type='wo')
+S_316.add_element('Mo', 2.5 / 100, percent_type='wo')
+S_316.add_element('P', 0.045 / 100, percent_type='wo')
+S_316.add_element('S', 0.030 / 100, percent_type='wo')
+S_316.add_element('N', 0.1 / 100, percent_type='wo')
+S_316.add_element('Fe')#, 65.485 / 100, percent_type='wo' )
+
+############
+### Overpack
+############
 
 Concrete = openmc.Material('Concrete')
 
-# 
+# Atomic number | Fraction by weight
+# 1 0.010000 
+# 6 0.001000 
+# 8 0.529107 
+# 11 0.016000 
+# 12 0.002000 
+# 13 0.033872 
+# 14 0.337021 
+# 19 0.013000 
+# 20 0.044000 
+# 26 0.014000
+
+Concrete.set_density('g/cm3',2.3)
+Concrete.add_element('H', 0.010000, percent_type='wo')
+Concrete.add_element('C', 0.001000, percent_type='wo')
+Concrete.add_element('O', 0.529107, percent_type='wo')
+Concrete.add_element('Na', 0.016000, percent_type='wo')
+Concrete.add_element('Mg', 0.002000, percent_type='wo')
+Concrete.add_element('Al', 0.033872, percent_type='wo')
+Concrete.add_element('Si', 0.337021, percent_type='wo') 
+Concrete.add_element('K', 0.013000, percent_type='wo')   
+Concrete.add_element('Ca', 0.044000, percent_type='wo')  
+Concrete.add_element('Fe') #0.014000, percent_type='wo') 
+
+#ASTM A516 Grade 70 / ASME SA516 Grade 70
+
+A516_70 = openmc.Material(name='A516_70')
+A516_70.set_density('g/cm3' , 7.85)
+
+### https://www.azom.com/article.aspx?ArticleID=4787
+
+A516_70.add_element('C',  0.1 /100, percent_type='wo')
+A516_70.add_element('Si', 0.6 /100, percent_type='wo')
+A516_70.add_element('Mn', 1 /100,   percent_type='wo')
+A516_70.add_element('P',  0.03 /100,percent_type='wo')
+A516_70.add_element('S',  0.03 /100,percent_type='wo')
+A516_70.add_element('Al', 0.02 /100,percent_type='wo')
+A516_70.add_element('Cr', 0.3 /100, percent_type='wo')
+A516_70.add_element('Cu', 0.3 /100, percent_type='wo')
+A516_70.add_element('Ni', 0.03 /100,percent_type='wo')
+A516_70.add_element('Mo', 0.08 /100,percent_type='wo')
+A516_70.add_element('Nb', 0.01 /100,percent_type='wo')
+A516_70.add_element('Ti', 0.03 /100,percent_type='wo')
+A516_70.add_element('V',  0.02 /100,percent_type='wo')
+A516_70.add_element('Fe')
+
+#############
+# Fuel Basket
+#############
+
+#Dosed Stainless Steel
+
+S_316_borated = openmc.Material(name='Fuel Basket')
+
+# C Carbon - 0.08% maximum
+# Mn Manganese - 2.00% maximum
+# Si Silicon - 0.75% maximum
+# Cr Chromium - 16.00 - 18.00%
+# Ni Nickel - 10.00 - 14.00%
+# Mo Molybdenum - 2.00 - 3.00%
+# P Phosphorous - 0.045% max
+# S Sulfur - 0.030% maximum
+# N Nitrogen - 0.10% max
+# Fe Iron - Balance
+
+S_316_borated.set_density('g/cm3',8.027, percent_type='wo')
+S_316_borated.add_element('C', 0.08 / 100 , percent_type='wo')
+S_316_borated.add_element('Mn', 2 / 100, percent_type='wo')
+S_316_borated.add_element('Si', 0.75 / 100, percent_type='wo')
+S_316_borated.add_element('Cr', 17 / 100, percent_type='wo')
+S_316_borated.add_element('Ni', 12 / 100, percent_type='wo')
+S_316_borated.add_element('Mo', 2.5 / 100, percent_type='wo')
+S_316_borated.add_element('P', 0.045 / 100, percent_type='wo')
+S_316_borated.add_element('S', 0.030 / 100, percent_type='wo')
+S_316_borated.add_element('N', 0.1 / 100, percent_type='wo')
+
+
+S_316_borated.add_element('B',1.5 / 100)
+S_316_borated.add_element('Fe')

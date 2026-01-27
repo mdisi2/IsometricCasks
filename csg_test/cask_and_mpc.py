@@ -159,9 +159,9 @@ def MPC():
     mpc_base_top = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm)
     mpc_base_bot = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 - 1 - 1- 190.5) * cm)
 
-    outer_wall = -mpc_outer & +mpc_inner
-    top = -mpc_toper_top & +mpc_toper_bot
-    base = -mpc_base_top & +mpc_base_bot
+    outer_wall = -mpc_outer & +mpc_inner & -mpc_toper_top & +mpc_base_bot
+    top = -mpc_toper_top & +mpc_toper_bot & -mpc_outer
+    base = -mpc_base_top & +mpc_base_bot & -mpc_outer
 
     MPC_region = outer_wall | top | base
 
@@ -174,7 +174,7 @@ def MPC():
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])
+geometry = openmc.Geometry([MPC()]) #,MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()
@@ -184,10 +184,10 @@ settings.export_to_xml()
 # Plotting hehe
 
 plot1 = openmc.Plot()
-plot1.basis = 'xy'
+plot1.basis = 'xz'
 plot1.origin = (0, 0, 213.25 / 2 * cm)
-plot1.width = (100, 100)
-plot1.pixels = (300, 300)
+plot1.width = (600, 600)
+plot1.pixels = (600, 600)
 plot1.color_by = 'cell'
 
 plots = openmc.Plots([plot1])

@@ -7,6 +7,17 @@ from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
 
 cm = 2.54 # 1inch = 2.54cm
 
+def Boudary_Region():
+
+    outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
+    h0 = openmc.ZPlane(z0=0, boundary_type='vacuum')
+    hT = openmc.ZPlane(z0=233 * cm, boundary_type='vacuum')
+
+    Region = -outer_cyl & +h0 & -hT
+
+    return Region
+
+
 def Overpack_Shells():
     #carbon steel or astm a516 gr 70
 
@@ -55,7 +66,7 @@ def Radial_Shield_Concrete():
 
 def Radial_Shield_Steel():
     
-    steel_outer = openmc.ZCyliner(r=((131/2) - 26.75) * cm)
+    steel_outer = openmc.ZCylinder(r=((131/2) - 26.75) * cm)
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
@@ -163,7 +174,8 @@ def MPC():
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells()])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])
+geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()
 geometry.export_to_xml()
@@ -172,11 +184,11 @@ settings.export_to_xml()
 # Plotting hehe
 
 plot1 = openmc.Plot()
-plot1.basis = 'xz'
+plot1.basis = 'xy'
 plot1.origin = (0, 0, 213.25 / 2 * cm)
 plot1.width = (100, 100)
 plot1.pixels = (300, 300)
-plot1.color_by = 'material'
+plot1.color_by = 'cell'
 
 plots = openmc.Plots([plot1])
 plots.export_to_xml()

@@ -19,7 +19,7 @@ S_316 = openmc.Material(name='Stainless Steel 316')
 # N Nitrogen - 0.10% max
 # Fe Iron - Balance
 
-S_316.set_density('g/cm3',8.027, percent_type='wo')
+S_316.set_density('g/cm3',8.027)
 S_316.add_element('C', 0.08 / 100 , percent_type='wo')
 S_316.add_element('Mn', 2 / 100, percent_type='wo')
 S_316.add_element('Si', 0.75 / 100, percent_type='wo')
@@ -29,14 +29,14 @@ S_316.add_element('Mo', 2.5 / 100, percent_type='wo')
 S_316.add_element('P', 0.045 / 100, percent_type='wo')
 S_316.add_element('S', 0.030 / 100, percent_type='wo')
 S_316.add_element('N', 0.1 / 100, percent_type='wo')
-S_316.add_element('Fe')#, 65.485 / 100, percent_type='wo' )
+S_316.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1) / 100 , percent_type='wo')
 
 ############
 ### Overpack
 ############
 
 # Type II Portland Cement
-Concrete = openmc.Material('Concrete')
+Concrete = openmc.Material(name='Concrete')
 
 # Atomic number | Fraction by weight
 # 1 0.010000 
@@ -60,7 +60,7 @@ Concrete.add_element('Al', 0.033872, percent_type='wo')
 Concrete.add_element('Si', 0.337021, percent_type='wo') 
 Concrete.add_element('K', 0.013000, percent_type='wo')   
 Concrete.add_element('Ca', 0.044000, percent_type='wo')  
-Concrete.add_element('Fe') #0.014000, percent_type='wo') 
+Concrete.add_element('Fe', 1 - (0.010000 + 0.001000 + 0.529107 + 0.016000 + 0.002000 + 0.033872 + 0.337021 + 0.013000 + 0.044000), percent_type='wo')
 
 #ASTM A516 Grade 70 / ASME SA516 Grade 70
 
@@ -82,7 +82,7 @@ A516_70.add_element('Mo', 0.08 /100,percent_type='wo')
 A516_70.add_element('Nb', 0.01 /100,percent_type='wo')
 A516_70.add_element('Ti', 0.03 /100,percent_type='wo')
 A516_70.add_element('V',  0.02 /100,percent_type='wo')
-A516_70.add_element('Fe')
+A516_70.add_element('Fe',1-(0.1 + 0.6 + 1 + 0.03 + 0.03 + 0.02 + 0.3 + 0.3 + 0.03 + 0.08 + 0.01 + 0.03 + 0.02)/100, percent_type='wo')
 
 #############
 # Fuel Basket
@@ -103,7 +103,7 @@ S_316_borated = openmc.Material(name='Fuel Basket')
 # N Nitrogen - 0.10% max
 # Fe Iron - Balance
 
-S_316_borated.set_density('g/cm3',8.027, percent_type='wo')
+S_316_borated.set_density('g/cm3',8.027)
 S_316_borated.add_element('C', 0.08 / 100 , percent_type='wo')
 S_316_borated.add_element('Mn', 2 / 100, percent_type='wo')
 S_316_borated.add_element('Si', 0.75 / 100, percent_type='wo')
@@ -115,5 +115,5 @@ S_316_borated.add_element('S', 0.030 / 100, percent_type='wo')
 S_316_borated.add_element('N', 0.1 / 100, percent_type='wo')
 
 
-S_316_borated.add_element('B',1.5 / 100)
-S_316_borated.add_element('Fe')
+S_316_borated.add_element('B',1.5 / 100, percent_type='wo')
+S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + 1.5) / 100 , percent_type='wo')    

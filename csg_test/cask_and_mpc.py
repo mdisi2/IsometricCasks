@@ -1,4 +1,5 @@
 import openmc
+from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later
 
@@ -22,7 +23,7 @@ def Overpack_Shells():
     hT = openmc.ZPlane(z0 = (213.25 - (6)) * cm)
 
     H = openmc.ZPlane(z0 = (213.25 - (6)) * cm)
-    HB = openmc.ZPlane((213.25 - (7.5)) * cm)
+    HB = openmc.ZPlane(z0 = (213.25 - (7.5)) * cm)
 
     outer_shell_region = -outer_cyl_outer & +outer_cyl_inner & -hT & +h0
     inner_shell_region = -inner_cyl_outer & +inner_cyl_inner & -hT & +h0 
@@ -30,7 +31,9 @@ def Overpack_Shells():
 
     Overpack_Region = outer_shell_region | inner_shell_region | topper_region
 
-    return Overpack_Region
+    Overpack = openmc.cell.Cell(name='Overpack Shells', fill=A516_70, region=Overpack_Region)
+
+    return Overpack
 
 
 def Radial_Shield_Concrete():
@@ -39,11 +42,16 @@ def Radial_Shield_Concrete():
     concrete_inner = openmc.ZCylinder(r=(131 - 26.75)/2 * cm) #26.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
-    ht = openmc.ZPlane((213.25 - (7.5)) * cm)
+    ht = openmc.ZPlane(z0 = (213.25 - (7.5)) * cm)
 
     Concrete_Region = -concrete_outer & +concrete_inner & +h0 & -ht
+
+    Concrete_Sheild = openmc.Cell(
+        name = 'Radial Shield Concrete',
+        region= Concrete_Region,
+        fill= Concrete)
     
-    return Concrete_Region
+    return Concrete_Sheild
 
 def Radial_Shield_Steel():
     
@@ -55,9 +63,14 @@ def Radial_Shield_Steel():
 
     Steel_Region = -steel_outer & +steel_inner & +h0 & -ht
 
-    return Steel_Region
+    Steel_Shield = openmc.Cell(
+        name = 'Radial Shield Steel',
+        region= Steel_Region,
+        fill= A516_70)
+
+    return Steel_Shield
     
-def Top_and_Bottom_Plates():
+def Plates():
 
     rad = openmc.ZCylinder(r=132.5/2 * cm)
 
@@ -71,9 +84,15 @@ def Top_and_Bottom_Plates():
     base_region = -rad & +bot_plate_bot & -bot_plate_top
 
     total_region = top_region | base_region
-    return total_region
 
-def MPC_Concrete_Base_and_Top():
+    Plates = openmc.Cell(
+        name = 'Top and Bottom Plates',
+        region= total_region,
+        fill= A516_70)
+
+    return Plates
+
+def MPC_Concrete():
 
     rad = openmc.ZCylinder(r=69.2/2 * cm)
 
@@ -81,29 +100,41 @@ def MPC_Concrete_Base_and_Top():
     top_conc_bot = openmc.ZPlane(z0 = (231.75-4-10.75) *cm)
 
     base_conc_top = openmc.ZPlane(z0=17.5 * cm)
-    base_conc_bot = openmc.ZPlane(Z0=2*cm)
+    base_conc_bot = openmc.ZPlane(z0=2*cm)
 
     top_region = -rad & +top_conc_bot & -top_conc_top
     base_region = -rad & +base_conc_bot & -base_conc_top
 
     total_region = top_region | base_region
-    return total_region
 
-def MPC_Steel_Base_and_Top():
+    MPC_Outer_Concrete = openmc.Cell(
+        name = 'MPC Outer Concrete',
+        region= total_region,
+        fill= Concrete)
+
+    return MPC_Outer_Concrete
+
+def MPC_Steel():
 
     rad = openmc.ZCylinder(r=69.2/2 * cm)
 
     top_steel_top = openmc.ZPlane(z0 = (231.75-4-10.75) *cm)
-    top_steel_bot = openmc.ZPlane(Z0= (231.75-4-10.75 - 3.75) * cm)
+    top_steel_bot = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75) * cm)
 
-    base_steel_top = openmc.ZPlane(z0 = openmc.ZPlane(Z0= (231.75-4-10.75 - 3.75 - 1 - 1 - 1- 190.5) * cm)) #same as MPC base bottom
+    base_steel_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 - 1 - 1- 190.5) * cm) #same as MPC base bottom
     base_steel_bot = openmc.ZPlane(z0=17.5 * cm) #same as base concrete top
 
     top_region = -rad & +top_steel_bot & -top_steel_top
     base_region = -rad & +base_steel_bot & -base_steel_top
 
     total_region = top_region | base_region
-    return total_region
+
+    MPC_Outer_Steel = openmc.Cell(
+        name = 'MPC Outer Steel',
+        region= total_region,
+        fill= A516_70)
+
+    return MPC_Outer_Steel
 
 
 def MPC():
@@ -114,8 +145,8 @@ def MPC():
     mpc_toper_top =  openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1) * cm) #1 in air clearance
     mpc_toper_bot = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 -1) * cm) #1 in thick MPC shell
 
-    mpc_base_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm)
-    mpc_base_bot = openmc.ZPlane(z0 = openmc.ZPlane(Z0= (231.75-4-10.75 - 3.75 - 1 - 1 - 1- 190.5) * cm))
+    mpc_base_top = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm)
+    mpc_base_bot = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 - 1 - 1- 190.5) * cm)
 
     outer_wall = -mpc_outer & +mpc_inner
     top = -mpc_toper_top & +mpc_toper_bot
@@ -123,5 +154,29 @@ def MPC():
 
     MPC_region = outer_wall | top | base
 
-    return MPC_region
+    MPC = openmc.Cell(
+        name = 'MPC',
+        region= MPC_region,
+        fill= S_316)
 
+    return MPC
+
+settings = openmc.Settings()
+materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells()])
+
+materials.export_to_xml()
+geometry.export_to_xml()
+settings.export_to_xml()
+
+# Plotting hehe
+
+plot1 = openmc.Plot()
+plot1.basis = 'xz'
+plot1.origin = (0, 0, 213.25 / 2 * cm)
+plot1.width = (100, 100)
+plot1.pixels = (300, 300)
+plot1.color_by = 'material'
+
+plots = openmc.Plots([plot1])
+plots.export_to_xml()

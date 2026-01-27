@@ -1,47 +1,29 @@
 import openmc
 
-Fuel_Basket = openmc.Material('Fuel Basket') #Stainless steel with neutron absorbers (B4C, look up typical examples)
-Fuel_Basket.set_density('g/cm3', 10)
+Fuel_Basket = openmc.Material(name='Fuel Basket') #Stainless steel with neutron absorbers (B4C, look up typical examples)
+Fuel_Basket.set_density('g/cm3', 10.0)
+Fuel_Basket.add_element('Fe', 0.70)
 
+PebbleMat = openmc.Material(name='Pebble Mat') #Stainless steel with neutron absorbers (B4C, look up typical examples)
+PebbleMat.set_density('g/cm3', 10.0)
+PebbleMat.add_element('Fe', 0.70)
+
+materials = openmc.Materials([Fuel_Basket, PebbleMat])
 
 ### CSG
 
-Z_top = openmc.ZPlane(z=12.54)
-Z_bottom = openmc.ZPlane(z=0)
-X_back = openmc.XPlane(x=6.538)
-X_front = openmc.XPlane(x=0) # at origin
-Y_Left = openmc.YPlane(y=0) # at origin
-Y_Right = openmc.YPlane(y=6.538)
+Z_top = openmc.ZPlane(z0=12.54)
+Z_bottom = openmc.ZPlane(z0=0)
+X_back = openmc.XPlane(x0=6.538)
+X_front = openmc.XPlane(x0=0) # at origin
+Y_Left = openmc.YPlane(y0=0) # at origin
+Y_Right = openmc.YPlane(y0=6.538)
   
-# XZ Plane
-# #Left half octogon big (X,Z)
-Big_Left_Half_Octogon = {(0,     0 , 3.251),
-                        (1.51,  0 , 3.251),
-                        (3.019, 0 , 4.76),
-                        (3.019, 0 , 7.78),
-                        (1.51,  0 , 9.289)}
-    
-Big_Bottom_Half_Octogon = {(0.25, 0 , 0),
-                              (0.25, 0 , 1.51),
-                              (1.759, 0 , 3.019),
-                              (4.779, 0, 3.019),
-                              (6.288, 0 , 1.51)}
-    
-Big_Right_Half_Octogon = {(6.538, 0 , 3.251),
-                              (5.028, 0 , 3.251),
-                              (3.519, 0 , 4.76),
-                              (3.519, 0 , 7.78),
-                              (5.028, 0 , 9.289)}
-    
-Big_Bottom_Half_Octogon = {(0.25, 0 , 12.54 - 0),
-                              (0.25, 0 ,  12.54 - 1.51),
-                              (1.759, 0 , 12.54 - 3.019),
-                              (4.779, 0, 12.54 - 3.019),
-                              (6.288, 0 , 12.54 - 1.51)}
     
 ## Holder thing XZ (X,Y,Z)
 
-XYZ_Holder = [(0,0),
+XYZ_Points =    [(0,0),
+                 (0.25,0),
                  (0.25,1.51),
                  (1.759,3.019),
                  (4.779,3.019),
@@ -67,38 +49,140 @@ XYZ_Holder = [(0,0),
                  (3.019, 7.78),
                  (3.019, 4.76),
                  (1.51,3.251),
-                 (0,1.51),
-                 (0,0)]
-    
-XZ_Plane = []
+                 (0,3.251),
+                 (0,1.51)]
 
-for i in range(len(XYZ_Holder)):
-    x1, z1 = XYZ_Holder[i]
-    x2, z2 = XYZ_Holder[(i + 1) % len(XYZ_Holder)]
+x_distance = 6.538
 
-    a =  z2 - z1
-    c = -(x2 - x1)
-    d = -(a*x1 + c*z1)
+XZ_left_octogon_pts = [(0,8.769),
+                       (1.51,8.769),
+                       (2.499,7.78),
+                       (2.499,4.76),
+                       (1.51,3.771),
+                       (0,3.771)]
 
-    line = openmc.Plane(a=a, c=c, d=d)
+XZ_right_octogon_pts = [(x_distance - 0,8.769),
+                       (x_distance - 1.51,8.769),
+                       (x_distance - 2.499,7.78),
+                       (x_distance -2.499,4.76),
+                       (x_distance - 1.51, 3.771),
+                       (x_distance - 0, 3.771)]
 
-    XZ_Plane.append(line) 
+XZ_bottom_pts = [(0.77,0),
+                 (0.77,1.51),
+                 (1.759,2.499),
+                 (4.779,2.499),
+                 (5.768,1.51),
+                 (5.768,0)]
 
-XZ_Region = openmc.Region()
+XZ_top_pts = [(0.77,12.54 - 0),
+                 (0.77,12.54 - 1.51),
+                 (1.759,12.54 - 2.499),
+                 (4.779,12.54 - 2.499),
+                 (5.768,12.54 - 1.51),
+                 (5.768,12.54 - 0)]
 
-for line in XZ_Plane:
-    XZ_Region &= line
 
-XZ_Holder = XZ_Region & +Y_Left & -Y_Right
-YZ_Holder = XZ_Region & X_front & - X_back
+XZ_Polygon = openmc.model.Polygon(basis='xz', points=XYZ_Points)
+XZ_LOctogon = openmc.model.Polygon(basis='xz', points=XZ_left_octogon_pts)
+XZ_ROctogon = openmc.model.Polygon(basis='xz', points=XZ_right_octogon_pts)
+XZ_BOctogon = openmc.model.Polygon(basis='xz', points=XZ_bottom_pts)
+XZ_TOctogon = openmc.model.Polygon(basis='xz', points=XZ_top_pts)
+
+YZ_Polygon = openmc.model.Polygon(basis='yz', points=XYZ_Points)
+YZ_LOctogon = openmc.model.Polygon(basis='yz', points=XZ_left_octogon_pts)
+YZ_ROctogon = openmc.model.Polygon(basis='yz', points=XZ_right_octogon_pts)
+YZ_BOctogon = openmc.model.Polygon(basis='yz', points=XZ_bottom_pts)
+YZ_TOctogon = openmc.model.Polygon(basis='yz', points=XZ_top_pts)
+
+xy_region  = -XZ_Polygon & +Y_Left & -Y_Right & +YZ_TOctogon & +YZ_BOctogon & +YZ_LOctogon & +YZ_ROctogon
+
+yz_region  = -YZ_Polygon & +X_front & -X_back  & +XZ_TOctogon & +XZ_BOctogon & +XZ_LOctogon & +XZ_ROctogon
 
 holder_cell = openmc.Cell(
     name = 'Unit Corr Cell',
-    region=XZ_Holder & YZ_Holder,
-    fill=Fuel_Basket)
+    region= xy_region | yz_region,
+    fill= Fuel_Basket)
 
+
+# Triso Pebble Construction
+
+T_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=12.54, r=3)
+B_sphere = openmc.Sphere(x0=6.538/2, y0=6.538/2, z0=0, r=3)
+#With XY plane as refrence
+XY_TSphere = openmc.Sphere(x0=6.538/2, y0=6.538, z0=12.54/2, r=3)
+XY_BSphere = openmc.Sphere(x0=6.538/2, y0=0, z0=12.54/2, r=3)
+XY_LSphere = openmc.Sphere(x0=0, y0= 6.538/2, z0=12.54/2, r=3)
+XY_RSphere = openmc.Sphere(x0=6.538, y0= 6.538/2, z0=12.54/2, r=3)
+
+PebbleT = openmc.Cell(
+    name = 'Pebble T',
+    region= -T_sphere & +Z_bottom & -Z_top,
+    fill= PebbleMat)
+
+PebbleB = openmc.Cell(
+    name = 'Pebble B',
+    region= -B_sphere & +Z_bottom & -Z_top,
+    fill= PebbleMat)
+
+PebbleTP = openmc.Cell(
+    name = 'Pebble TP',
+    region= -XY_TSphere & +Y_Left & -Y_Right,
+    fill= PebbleMat)
+
+PebbleTB = openmc.Cell(
+    name = 'Pebble TB',
+    region= -XY_BSphere & +Y_Left & -Y_Right,
+    fill= PebbleMat)
+
+PebbleL = openmc.Cell(
+    name = 'Pebble L',
+    region= -XY_LSphere & +X_front & -X_back,
+    fill= PebbleMat)
+
+PebbleR = openmc.Cell(
+    name = 'Pebble R',
+    region= -XY_RSphere & +X_front & -X_back,
+    fill= PebbleMat)
+
+## XML and Plotting
+
+geometry = openmc.Geometry([holder_cell, PebbleT, PebbleB, PebbleTP, PebbleTB, PebbleL, PebbleR])
+settings = openmc.Settings()
 
 materials.export_to_xml()
 geometry.export_to_xml()
 settings.export_to_xml()
 
+plotxz = openmc.Plot()
+plotxz.basis = 'xz'
+plotxz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxz.width = (10, 15)
+plotxz.pixels = (300, 450)
+plotxz.color_by = 'material'
+
+plotyz = openmc.Plot()
+plotyz.basis = 'yz'
+plotyz.origin = (6.538/2, 6.538/2, 12.54/2)
+plotyz.width = (10, 15)
+plotyz.pixels = (300, 450)
+plotyz.color_by = 'material'
+
+plotxy = openmc.Plot()
+plotxy.basis = 'xy'
+plotxy.origin = (6.538/2, 6.538/2, 12.54/2)
+plotxy.width = (15, 15)
+plotxy.pixels = (450, 450)
+plotxy.color_by = 'material'
+
+
+plotxy3 = openmc.Plot()
+plotxy3.basis = 'xy'
+plotxy3.origin = (6.538/2, 6.538/2, 10)
+plotxy3.width = (15, 15)
+plotxy3.pixels = (450, 450)
+plotxy3.color_by = 'material'
+
+
+plots = openmc.Plots([plotxz,plotxy,plotyz,plotxy3])
+plots.export_to_xml()

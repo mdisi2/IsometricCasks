@@ -53,7 +53,7 @@ def Radial_Shield_Concrete():
     concrete_inner = openmc.ZCylinder(r=(131 - 26.75)/2 * cm) #26.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
-    ht = openmc.ZPlane(z0 = (213.25 - (7.5)) * cm)
+    ht = openmc.ZPlane(z0 = (231.25 - (7.5)) * cm)
 
     Concrete_Region = -concrete_outer & +concrete_inner & +h0 & -ht
 
@@ -70,7 +70,7 @@ def Radial_Shield_Steel():
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
-    ht = openmc.ZPlane((213.25 - (7.5)) * cm)
+    ht = openmc.ZPlane((231.25 - (7.5)) * cm)
 
     Steel_Region = -steel_outer & +steel_inner & +h0 & -ht
 
@@ -174,7 +174,8 @@ def MPC():
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-geometry = openmc.Geometry([MPC()]) #,MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])
+#geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])\
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()
@@ -185,9 +186,9 @@ settings.export_to_xml()
 
 plot1 = openmc.Plot()
 plot1.basis = 'xz'
-plot1.origin = (0, 0, 213.25 / 2 * cm)
-plot1.width = (600, 600)
-plot1.pixels = (600, 600)
+plot1.origin = (0, 0, 240 / 2 * cm)
+plot1.width = (700, 700)
+plot1.pixels = (700, 700)
 plot1.color_by = 'cell'
 
 plots = openmc.Plots([plot1])

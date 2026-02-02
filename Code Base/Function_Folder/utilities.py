@@ -17,11 +17,6 @@ def extrude(coords,start,plane1,plane2):
     """
     
     if start == 'xy':
-
-        if plane1 != type(openmc.ZPlane()):
-            plane1 = openmc.ZPlane(plane1)
-        if plane2 != type(openmc.ZPlane()):
-            plane2 = openmc.ZPlane(plane2)
         
         XY = []
         for i in range(len(coords)):
@@ -45,10 +40,6 @@ def extrude(coords,start,plane1,plane2):
         return ret
     
     if start == "xz":
-        if plane1 != type(openmc.YPlane()):
-            plane1 = openmc.YPlane(plane1)
-        if plane2 != type(openmc.YPlane()):
-            plane2 = openmc.YPlane(plane2)
         
         XZ = []
         for i in range(len(coords)):
@@ -72,10 +63,6 @@ def extrude(coords,start,plane1,plane2):
         return ret
     
     if start == "yz":
-        if plane1 != type(openmc.XPlane()):
-            plane1 = openmc.XPlane(plane1)
-        if plane2 != type(openmc.XPlane()):
-            plane2 = openmc.XPlane(plane2)
         
         YZ = []
         for i in range(len(coords)):

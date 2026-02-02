@@ -1,0 +1,22 @@
+The staff reviewed the HI-STORM 100 Cask System criticality analysis to ensure that all
+credible normal, off-normal, and accident conditions have been identified and their potential
+consequences on criticality considered such that the HI-STORM 100 Cask System meets the
+following regulatory requirements: 10 CFR 72.24(c)(3), 72.24(d), 72.124, 72.236(c), and
+72.236(g). The SAR was also reviewed to determine whether the cask system fulfills the
+following acceptance criteria listed in Section 6 of NUREG-1536, Standard Review Plan for Dry
+Cask Storage Systems:
+5. The multiplication factor, including all biases and uncertainties at a 95 percent confidence
+level, should not exceed 0.95 under all credible normal, off-normal, and accident
+conditions.
+6. At least two unlikely, independent, and concurrent or sequential changes to the conditions
+essential to criticality safety, under normal, off-normal, and accident conditions, should
+occur before an accidental criticality is deemed to be possible.
+7. When practicable, criticality safety of the design should be established on the basis of
+favorable geometry, permanent fixed neutron-absorbing materials (poisons), or both.
+Where solid neutron-absorbing materials are used, the design should provide for a
+positive means to verify their continued efficacy during the storage period.
+4. Criticality safety of the cask system should not rely on use of the following credits:
+a. burnup of the fuel
+b. fuel-related burnable neutron absorbers
+3. more than 75 percent for fixed neutron absorbers when subject to standard
+acceptance tests.

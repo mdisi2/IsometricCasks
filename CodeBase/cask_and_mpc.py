@@ -196,6 +196,7 @@ plot1.origin = (0, 0, 240 / 2 * cm)
 plot1.width = (700, 700)
 plot1.pixels = (700, 700)
 plot1.color_by = 'material'
+plot1.type = 'slice'
 
 plots = openmc.Plots([plot1])
 plots.export_to_xml()

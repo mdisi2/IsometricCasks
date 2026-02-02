@@ -2,10 +2,9 @@ import openmc
 from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later
-
 #everything will be in inches multipled by the conversion factor
 
-cm = 2.54 # 1inch = 2.54cm
+cm = 2.54 # 1-inch = 2.54cm
 
 def Boudary_Region():
 
@@ -31,10 +30,10 @@ def Overpack_Shells():
     topper_inner = openmc.ZCylinder(r=73.5/2 * cm)
 
     h0 = openmc.ZPlane(z0=2 * cm)
-    hT = openmc.ZPlane(z0 = (213.25 - (6)) * cm)
+    hT = openmc.ZPlane(z0 = (231.25 - (6)) * cm)
 
-    H = openmc.ZPlane(z0 = (213.25 - (6)) * cm)
-    HB = openmc.ZPlane(z0 = (213.25 - (7.5)) * cm)
+    H = openmc.ZPlane(z0 = (231.25 - (6)) * cm)
+    HB = openmc.ZPlane(z0 = (231.25 - (7.5)) * cm)
 
     outer_shell_region = -outer_cyl_outer & +outer_cyl_inner & -hT & +h0
     inner_shell_region = -inner_cyl_outer & +inner_cyl_inner & -hT & +h0 
@@ -48,9 +47,10 @@ def Overpack_Shells():
 
 
 def Radial_Shield_Concrete():
+    #portland concrete ii
 
     concrete_outer = openmc.ZCylinder(r=131/2 * cm)
-    concrete_inner = openmc.ZCylinder(r=(131 - 26.75)/2 * cm) #26.75 in thick
+    concrete_inner = openmc.ZCylinder(r=(131/2 - 26.75) * cm) #26.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
     ht = openmc.ZPlane(z0 = (231.25 - (7.5)) * cm)
@@ -65,8 +65,10 @@ def Radial_Shield_Concrete():
     return Concrete_Sheild
 
 def Radial_Shield_Steel():
+
+
     
-    steel_outer = openmc.ZCylinder(r=((131/2) - 26.75) * cm)
+    steel_outer = openmc.ZCylinder(r=(131/2 - 26.75) * cm)
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
@@ -82,6 +84,8 @@ def Radial_Shield_Steel():
     return Steel_Shield
     
 def Plates():
+
+    #stainless steel
 
     rad = openmc.ZCylinder(r=132.5/2 * cm)
 
@@ -104,6 +108,8 @@ def Plates():
     return Plates
 
 def MPC_Concrete():
+
+    #portland concrete ii
 
     rad = openmc.ZCylinder(r=69.2/2 * cm)
 
@@ -174,8 +180,7 @@ def MPC():
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-#geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete(), Overpack_Shells(), Radial_Shield_Steel()])\
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(), Radial_Shield_Concrete()])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), MPC_Concrete(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()

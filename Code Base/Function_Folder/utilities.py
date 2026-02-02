@@ -1,4 +1,4 @@
-### Holds helpful functions for more readable code
+### Holds helpful functions for more readable code within sim files
 
 import openmc 
 

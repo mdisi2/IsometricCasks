@@ -1,7 +1,7 @@
 import openmc
 from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
 
-###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later
+###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
 #everything will be in inches multipled by the conversion factor
 
 cm = 2.54 # 1-inch = 2.54cm
@@ -18,7 +18,8 @@ def Boudary_Region():
 
 
 def Overpack_Shells():
-    #carbon steel or astm a516 gr 70
+
+    #carbon steel outer and inner cylindrical shells
 
     outer_cyl_outer = openmc.ZCylinder(r=132.5/2 * cm)
     outer_cyl_inner = openmc.ZCylinder(r=131/2 * cm)
@@ -66,7 +67,7 @@ def Radial_Shield_Concrete():
 
 def Radial_Shield_Steel():
 
-
+    # not sure yet
     
     steel_outer = openmc.ZCylinder(r=(131/2 - 26.75) * cm)
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
@@ -85,7 +86,7 @@ def Radial_Shield_Steel():
     
 def Plates():
 
-    #stainless steel
+    # carbon steel top and naseplate
 
     rad = openmc.ZCylinder(r=132.5/2 * cm)
 
@@ -103,7 +104,7 @@ def Plates():
     Plates = openmc.Cell(
         name = 'Top and Bottom Plates',
         region= total_region,
-        fill= A516_70)
+        fill= S_316)
 
     return Plates
 
@@ -180,7 +181,7 @@ def MPC():
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), MPC_Concrete(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells()])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()
@@ -194,7 +195,7 @@ plot1.basis = 'xz'
 plot1.origin = (0, 0, 240 / 2 * cm)
 plot1.width = (700, 700)
 plot1.pixels = (700, 700)
-plot1.color_by = 'cell'
+plot1.color_by = 'material'
 
 plots = openmc.Plots([plot1])
 plots.export_to_xml()

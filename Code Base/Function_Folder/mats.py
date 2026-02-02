@@ -1,7 +1,6 @@
-### Holds messy materials like alloyx ss316
+### Material Library for Cask materials and TRISO Pebble materials
 
 import openmc
-
 
 ##########
 ### MPC Canister Stainless Steal S_316
@@ -103,6 +102,10 @@ S_316_borated = openmc.Material(name='Fuel Basket')
 # N Nitrogen - 0.10% max
 # Fe Iron - Balance
 
+# B - whatever i want, but in practice around 1.5 w%o
+
+B_wo = 1.5 / 100
+
 S_316_borated.set_density('g/cm3',8.027)
 S_316_borated.add_element('C', 0.08 / 100 , percent_type='wo')
 S_316_borated.add_element('Mn', 2 / 100, percent_type='wo')
@@ -115,5 +118,10 @@ S_316_borated.add_element('S', 0.030 / 100, percent_type='wo')
 S_316_borated.add_element('N', 0.1 / 100, percent_type='wo')
 
 
-S_316_borated.add_element('B',1.5 / 100, percent_type='wo')
-S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + 1.5) / 100 , percent_type='wo')    
+S_316_borated.add_element('B', B_wo, percent_type='wo')
+S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + B_wo) / 100 , percent_type='wo')
+
+
+#### TODO : Make graphite for triso pebble 
+#### TODO : Make depleted particle compotision for each particle
+#### TODO : Or make smear triso pebble for entire pebble? 

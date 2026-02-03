@@ -1,4 +1,5 @@
 import openmc 
+import numpy as np
 
 from Function_Folder.mats import S_316_borated, Concrete
 
@@ -140,7 +141,7 @@ def Fuel_Blanket():
 
 def basket():
 
-    frame_outer = [(0.1,5.503),
+    frame_outer = np.array([(0.1,5.503),
                 (-0.1,5.503),
                 (-0.1,3.551),
                 (-3.125,1.804),
@@ -151,36 +152,36 @@ def basket():
                 (0.1,-3.551),
                 (3.125,-1.804),
                 (3.125,1.804),
-                (0.1,3.551)]
+                (0.1,3.551)])
     
-    frame_cut = [(0,3.493),
+    frame_cut = np.array([(0,3.493),
                  (3.025, 1.746),
                  (3.025,-1.746),
                  (0,-3.493),
                  (-3.025,-1.746),
-                 (-3.025,1.764)]
+                 (-3.025,1.764)])
 
     frame_xz = openmc.model.Polygon(points=frame_outer,basis='xz')
     cut_xz = openmc.model.Polygon(points=frame_cut,basis='xz')
-    frame_region_xy = +cut_xz.region & -frame_xz.region
+    frame_region_xz = ~cut_xz.region & frame_xz.region 
 
-
+    frame_yz = openmc.model.Polygon(points=frame_outer,basis='yz')
+    cut_yz = openmc.model.Polygon(points=frame_cut,basis='yz')
+    frame_region_yz = ~cut_yz.region & frame_yz.region
 
 
     frame = openmc.Cell(name='blanket',
-                        region = frame_region_xy,
-                        fill = Concrete ) #frame_region_yz
+                        region = frame_region_yz | frame_region_xz,
+                        fill = Concrete)
     
     return frame
 
 
 
-def Triso_Pebble():
+def Triso_Pebbles():
     #sphere in xy plane
 
     Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
-    Top_far = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
-    Top_close = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
     
     t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
     t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
@@ -211,7 +212,7 @@ tester = openmc.Cell(name='ball',
 
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete])
-geometry = openmc.Geometry([Triso_Pebble()])
+geometry = openmc.Geometry([basket(), Triso_Pebbles()])
 geometry.root_universe.bounding_region = Boundary_Region
 
 materials.export_to_xml()
@@ -221,28 +222,54 @@ settings.export_to_xml()
 # Plotting hehe
 
 plot1 = openmc.Plot()
-plot1.filename = 'basket_plot_origin.png'
+plot1.filename = 'basket_plot_origin_xz.png'
 plot1.basis = 'xz'
 plot1.origin = (0, 0, 0)
 plot1.width = (13, 13)
-plot1.pixels = (100, 100)
+plot1.pixels = (500, 500)
 plot1.color_by = 'cell'
 
 plot2 = openmc.Plot()
-plot2.filename = 'basklet_plot_far.png'
+plot2.filename = 'basklet_plot_far_xz.png'
 plot2.basis = 'xz'
-plot2.origin = (0, 3.123999, 0)
+plot2.origin = (0, 3.1249, 0)
 plot2.width = (13, 13)
-plot2.pixels = (100, 100)
+plot2.pixels = (500, 500)
 plot2.color_by = 'cell'
 
 plot3 = openmc.Plot()
-plot3.filename = 'basklet_plot_close.png'
+plot3.filename = 'basklet_plot_close_xz.png'
 plot3.basis = 'xz'
 plot3.origin = (0, -3.125, 0)
 plot3.width = (13, 13)
-plot3.pixels = (100, 100)
+plot3.pixels = (500, 500)
 plot3.color_by = 'cell'
 
-plots = openmc.Plots([plot1,plot2,plot3])
+##Yz
+
+plot4 = openmc.Plot()
+plot4.filename = 'basket_plot_origin_yz.png'
+plot4.basis = 'yz'
+plot4.origin = (0, 0, 0)
+plot4.width = (13, 13)
+plot4.pixels = (500, 500)
+plot4.color_by = 'cell'
+
+plot5 = openmc.Plot()
+plot5.filename = 'basklet_plot_far_yz.png'
+plot5.basis = 'yz'
+plot5.origin = (3.1249, 0, 0)
+plot5.width = (13, 13)
+plot5.pixels = (500, 500)
+plot5.color_by = 'cell'
+
+plot6 = openmc.Plot()
+plot6.filename = 'basklet_plot_close_yz.png'
+plot6.basis = 'yz'
+plot6.origin = (-3.125, 0, 0)
+plot6.width = (13, 13)
+plot6.pixels = (500, 500)
+plot6.color_by = 'cell'
+
+plots = openmc.Plots([plot1,plot2,plot3,plot4,plot5,plot6])
 plots.export_to_xml()

@@ -197,7 +197,17 @@ plot1.width = (700, 700)
 plot1.pixels = (700, 700)
 plot1.color_by = 'material'
 plot1.type = 'slice'
-plot1.filename = 'cask_xsection.png'
+plot1.filename = 'cask_xsection_yz.png'
 
-plots = openmc.Plots([plot1])
+
+plot2 = openmc.Plot()
+plot2.basis = 'xy'
+plot2.origin = (0, 0, 240 / 2 * cm)
+plot2.width = (700, 700)
+plot2.pixels = (700, 700)
+plot2.color_by = 'material'
+plot2.type = 'slice'
+plot2.filename = 'cask_xsection_xy.png'
+
+plots = openmc.Plots([plot1,plot2])
 plots.export_to_xml()

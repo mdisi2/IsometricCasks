@@ -197,6 +197,7 @@ plot1.width = (700, 700)
 plot1.pixels = (700, 700)
 plot1.color_by = 'material'
 plot1.type = 'slice'
+plot1.filename = 'cask_xsection.png'
 
 plots = openmc.Plots([plot1])
 plots.export_to_xml()

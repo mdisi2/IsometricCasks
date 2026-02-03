@@ -6,7 +6,7 @@ from Function_Folder.mats import S_316_borated, Concrete
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
 ### In units [cm]
 
-###bouding box
+### Bouding Box
 z_top = openmc.ZPlane(z0= 11.006257/2,boundary_type='reflective')
 z_bottom = openmc.ZPlane(z0= -11.006257/2,boundary_type='reflective')
 x_1 = openmc.XPlane(x0 = -6.25 / 2,boundary_type='reflective')
@@ -14,130 +14,7 @@ x_2 = openmc.XPlane(x0 =  6.25 / 2,boundary_type='reflective')
 y_1 = openmc.YPlane(y0 =  -6.25 / 2,boundary_type='reflective')
 y_2 = openmc.YPlane(y0 =  6.25 / 2,boundary_type='reflective')
 
-
 Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
-
-def Fuel_Blanket():
-
-    ## Main frame
-    PXZ_1 = [(3.025,0),
-             (3.125,0),
-             (3.125,1.804),
-             (0.1,3.551),
-             (0.1,5.503),
-             (0,5.503),
-             (0,3.493),
-             (3.025,1.746)]
-    
-    PXZ_2 = [(-3.025,0),
-             (-3.125,0),
-             (-3.125,1.804),
-             (-0.1,3.551),
-             (-0.1,5.503),
-             (-0,5.503),
-             (-0,3.493),
-             (-3.025,1.746)]
-    
-    PXZ_3 = [(-3.025,-0),
-             (-3.125,-0),
-             (-3.125,-1.804),
-             (-0.1,-3.551),
-             (-0.1,-5.503),
-             (-0,-5.503),
-             (-0,-3.493),
-             (-3.025,-1.746)]
-    
-    PXZ_4 = [(3.025,-0),
-             (3.125,-0),
-             (3.125,-1.804),
-             (0.1,-3.551),
-             (0.1,-5.503),
-             (0,-5.503),
-             (0,-3.493),
-             (3.025,-1.746)]
-    
-
-    frame_outer = [(0.1,5.503),
-                (-0.1,5.503),
-                (-0.1,3.551),
-                (-3.125,1.804),
-                (-3.125,-1.804),
-                (-0.1,-3.551),
-                (-0.1,-5.503),
-                (0.1,-5.503),
-                (0.1,-3.551),
-                (3.125,-1.804),
-                (3.125,1.804),
-                (0.1,3.551)]
-    
-    frame_cut = [(0,3.493),
-                 (-3.025, 1.746),
-                 (-3.025,-1.746),
-                 (0,-3.493),
-                 (3.025,-1.746),
-                 (3.025,1.764)]
-    
-    ### Center cuts
-    
-    PXZ_1_hole = [(0,0),
-                  (1.732,0),
-                  (0.866,1.5),
-                  (0,1.5)]
-    
-    PXZ_2_hole = [(0,0),
-                  (-1.732,0),
-                  (-0.866,1.5),
-                  (-0,1.5)]
-    
-    PXZ_2_hole = [(0,0),
-                  (-1.732,0),
-                  (-0.866,-1.5),
-                  (-0,-1.5)]
-    
-    PXZ_2_hole = [(0,0),
-                  (1.732,0),
-                  (0.866,-1.5),
-                  (0,-1.5)]
-    
-    ### Corner cuts
-    
-    PXZ_1_hole2 = [(3.125,4.003),
-                  (3.125,5.503),
-                  (1.393,5.503),
-                  (2.259,4.003)]
-    
-    PXZ_2_hole2 = [(-3.125,4.003),
-                  (-3.125,5.503),
-                  (-1.393,5.503),
-                  (-2.259,4.003)]
-    
-    PXZ_3_hole2 = [(-3.125,-4.003),
-                  (-3.125,-5.503),
-                  (-1.393,-5.503),
-                  (-2.259,-4.003)]
-    
-    PXZ_3_hole2 = [(3.125,-4.003),
-                  (3.125,-5.503),
-                  (1.393,-5.503),
-                  (2.259,-4.003)]
-    
-
-    Region_1 = openmc.model.Polygon(points=PXZ_1, basis='xz').region
-    Region_cut_1 = openmc.model.Polygon(points=PXZ_1_hole, basis='xz').region
-
-
-    
-    Region_cut_2 = openmc.model.Polygon(points=PXZ_1_hole2, basis='xz').region
-
-    total_region = (Region_1 & ~Region_cut_1 & ~Region_cut_2) & Boundary_Region
-
-
-    F_B = openmc.Cell(name='Fuel Blanket',
-                      region = total_region,
-                      fill = S_316_borated)
-
-    return F_B
-
 
 def basket():
 
@@ -171,7 +48,7 @@ def basket():
 
 
     frame = openmc.Cell(name='blanket',
-                        region = frame_region_yz | frame_region_xz,
+                        region = (frame_region_yz | frame_region_xz) & Boundary_Region,
                         fill = Concrete)
     
     return frame
@@ -245,7 +122,7 @@ plot3.width = (13, 13)
 plot3.pixels = (500, 500)
 plot3.color_by = 'cell'
 
-##Yz
+##YZ Plots
 
 plot4 = openmc.Plot()
 plot4.filename = 'basket_plot_origin_yz.png'

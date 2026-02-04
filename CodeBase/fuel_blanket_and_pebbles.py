@@ -119,7 +119,7 @@ def finite_universe():
 
     finite = openmc.RectLattice(name='Basket Lattice')
     finite.pitch = (6.25, 6.25, 11.006257)
-    finite.lower_left = (-175, -175, 0)
+    finite.lower_left = (-175, -175, 50)
 
     finite.universes = np.full((60, 60, 50),unit)
 
@@ -129,8 +129,8 @@ def finite_universe():
     xmax = openmc.XPlane(x0= 175)
     ymin = openmc.YPlane(y0= -175)
     ymax = openmc.YPlane(y0= 175)
-    zmin = openmc.ZPlane(z0= 0)
-    zmax = openmc.ZPlane(z0= 505)
+    zmin = openmc.ZPlane(z0= 52.705)
+    zmax = openmc.ZPlane(z0= 505 + 55)
 
     region = +xmin & -xmax & +ymin & -ymax & +zmin & -zmax
 

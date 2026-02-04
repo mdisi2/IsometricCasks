@@ -212,22 +212,22 @@ settings.export_to_xml()
 
 plot1 = openmc.Plot()
 plot1.basis = 'xz'
-plot1.origin = (0, 0, 240 / 2 * cm)
+plot1.origin = (0, 2, 240 / 2 * cm)
 plot1.width = (400, 700)
-plot1.pixels = (800, 1400)
+plot1.pixels = (1600, 1400*2)
 plot1.color_by = 'cell'
 plot1.type = 'slice'
-plot1.filename = 'cask_xsection_yz_filled.png'
+plot1.filename = 'cask_xsection_yz_filled_stag.png'
 
 
 plot2 = openmc.Plot()
 plot2.basis = 'xy'
-plot2.origin = (0, 0, 240 / 2 * cm)
+plot2.origin = (0, 0, 248.7 / 2 * cm)
 plot2.width = (400, 400)
-plot2.pixels = (1200, 1200)
+plot2.pixels = (1200*3, 1200*3)
 plot2.color_by = 'cell'
 plot2.type = 'slice'
-plot2.filename = 'cask_xsection_xy_filled.png'
+plot2.filename = 'cask_xsection_xy_filled_stag.png'
 
 plots = openmc.Plots([plot1,plot2])
 plots.export_to_xml()

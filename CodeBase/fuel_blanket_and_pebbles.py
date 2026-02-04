@@ -7,16 +7,16 @@ from Function_Folder.mats import S_316_borated, Concrete
 ### In units [cm]
 
 ### Bouding Box
-z_top = openmc.ZPlane(z0= 11.006257/2,boundary_type='reflective')
-z_bottom = openmc.ZPlane(z0= -11.006257/2,boundary_type='reflective')
-x_1 = openmc.XPlane(x0 = -6.25 / 2,boundary_type='reflective')
-x_2 = openmc.XPlane(x0 =  6.25 / 2,boundary_type='reflective')
-y_1 = openmc.YPlane(y0 =  -6.25 / 2,boundary_type='reflective')
-y_2 = openmc.YPlane(y0 =  6.25 / 2,boundary_type='reflective')
+z_top = openmc.ZPlane(z0= 11.006257/2)
+z_bottom = openmc.ZPlane(z0= -11.006257/2)
+x_1 = openmc.XPlane(x0 = -6.25 / 2)
+x_2 = openmc.XPlane(x0 =  6.25 / 2)
+y_1 = openmc.YPlane(y0 =  -6.25 / 2)
+y_2 = openmc.YPlane(y0 =  6.25 / 2)
 
 Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
 
-def basket():
+def F_Blanket():
 
     frame_outer = np.array([(0.1,5.503),
                 (-0.1,5.503),
@@ -70,83 +70,142 @@ def Triso_Pebbles():
     b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
     b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
     
-    region = -Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4
+    region = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
     Triso_Pebble = openmc.Cell(name='Pebbles',
-                               region=region & Boundary_Region,
+                               region=region ,
                                fill=Concrete) # TODO triso pebble fill
 
     return Triso_Pebble
 
-def Triso_smeared():
-    ## TODO
+def void_space(basket):
 
-    return None
+    #Fill with water, air, helium
 
-tester = openmc.Cell(name='ball',
-                     region = -openmc.Sphere(r=3.0,y0=3.125),
-                     fill = Concrete)
+    Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
+    
+    t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
+    t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
+    t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
+    t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
 
-settings = openmc.Settings()
-materials = openmc.Materials([S_316_borated, Concrete])
-geometry = openmc.Geometry([basket(), Triso_Pebbles()])
-geometry.root_universe.bounding_region = Boundary_Region
+    b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
+    b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
+    b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
+    b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
+    
+    region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
-materials.export_to_xml()
-geometry.export_to_xml()
-settings.export_to_xml()
+    region = Boundary_Region & ~(region_pebbles| basket.region)
 
-# Plotting hehe
+    voidcel = openmc.Cell(name='void',
+                          region=region,
+                          fill=Concrete) # TODO air
 
-plot1 = openmc.Plot()
-plot1.filename = 'basket_plot_origin_xz.png'
-plot1.basis = 'xz'
-plot1.origin = (0, 0, 0)
-plot1.width = (13, 13)
-plot1.pixels = (500, 500)
-plot1.color_by = 'cell'
+    return voidcel
 
-plot2 = openmc.Plot()
-plot2.filename = 'basklet_plot_far_xz.png'
-plot2.basis = 'xz'
-plot2.origin = (0, 3.1249, 0)
-plot2.width = (13, 13)
-plot2.pixels = (500, 500)
-plot2.color_by = 'cell'
+def finite_universe():
 
-plot3 = openmc.Plot()
-plot3.filename = 'basklet_plot_close_xz.png'
-plot3.basis = 'xz'
-plot3.origin = (0, -3.125, 0)
-plot3.width = (13, 13)
-plot3.pixels = (500, 500)
-plot3.color_by = 'cell'
+    # MPC height = ~504.19 cm so at ~ 11 cell height = 46 to be safe
+    # MPC diameter = 347.98 cm at  ~ 6.25 cell width = 57 to be safe
 
-##YZ Plots
+    blanket = F_Blanket()
+    unit = openmc.Universe(name='unit cell',
+                           cells=(
+                            blanket, 
+                            Triso_Pebbles(),
+                            void_space(blanket)))
 
-plot4 = openmc.Plot()
-plot4.filename = 'basket_plot_origin_yz.png'
-plot4.basis = 'yz'
-plot4.origin = (0, 0, 0)
-plot4.width = (13, 13)
-plot4.pixels = (500, 500)
-plot4.color_by = 'cell'
 
-plot5 = openmc.Plot()
-plot5.filename = 'basklet_plot_far_yz.png'
-plot5.basis = 'yz'
-plot5.origin = (3.1249, 0, 0)
-plot5.width = (13, 13)
-plot5.pixels = (500, 500)
-plot5.color_by = 'cell'
+    finite = openmc.RectLattice(name='Basket Lattice')
+    finite.pitch = (6.25, 6.25, 11.006257)
+    finite.lower_left = (-175, -175, 0)
 
-plot6 = openmc.Plot()
-plot6.filename = 'basklet_plot_close_yz.png'
-plot6.basis = 'yz'
-plot6.origin = (-3.125, 0, 0)
-plot6.width = (13, 13)
-plot6.pixels = (500, 500)
-plot6.color_by = 'cell'
+    finite.universes = np.full((60, 60, 50),unit)
 
-plots = openmc.Plots([plot1,plot2,plot3,plot4,plot5,plot6])
-plots.export_to_xml()
+
+    #Bounding Box
+    xmin = openmc.XPlane(x0=-175)
+    xmax = openmc.XPlane(x0= 175)
+    ymin = openmc.YPlane(y0= -175)
+    ymax = openmc.YPlane(y0= 175)
+    zmin = openmc.ZPlane(z0= 0)
+    zmax = openmc.ZPlane(z0= 505)
+
+    region = +xmin & -xmax & +ymin & -ymax & +zmin & -zmax
+
+    lattice_cell = openmc.Cell(name='Pebble Lattice Cell',
+                               fill=finite,
+                               region=region)
+
+    return openmc.Universe(name='Pebble Lattice Universe',
+                           cells=[lattice_cell])
+
+
+def plotter():
+
+    settings = openmc.Settings()
+    materials = openmc.Materials([S_316_borated, Concrete])
+    geometry = openmc.Geometry([F_Blanket(), Triso_Pebbles()])
+    geometry.root_universe.bounding_region = Boundary_Region
+
+    materials.export_to_xml()
+    geometry.export_to_xml()
+    settings.export_to_xml()
+
+    # Plotting hehe
+
+    plot1 = openmc.Plot()
+    plot1.filename = 'basket_plot_origin_xz.png'
+    plot1.basis = 'xz'
+    plot1.origin = (0, 0, 0)
+    plot1.width = (13, 13)
+    plot1.pixels = (500, 500)
+    plot1.color_by = 'cell'
+
+    plot2 = openmc.Plot()
+    plot2.filename = 'basklet_plot_far_xz.png'
+    plot2.basis = 'xz'
+    plot2.origin = (0, 3.1249, 0)
+    plot2.width = (13, 13)
+    plot2.pixels = (500, 500)
+    plot2.color_by = 'cell'
+
+    plot3 = openmc.Plot()
+    plot3.filename = 'basklet_plot_close_xz.png'
+    plot3.basis = 'xz'
+    plot3.origin = (0, -3.125, 0)
+    plot3.width = (13, 13)
+    plot3.pixels = (500, 500)
+    plot3.color_by = 'cell'
+
+    ##YZ Plots
+
+    plot4 = openmc.Plot()
+    plot4.filename = 'basket_plot_origin_yz.png'
+    plot4.basis = 'yz'
+    plot4.origin = (0, 0, 0)
+    plot4.width = (13, 13)
+    plot4.pixels = (500, 500)
+    plot4.color_by = 'cell'
+
+    plot5 = openmc.Plot()
+    plot5.filename = 'basklet_plot_far_yz.png'
+    plot5.basis = 'yz'
+    plot5.origin = (3.1249, 0, 0)
+    plot5.width = (13, 13)
+    plot5.pixels = (500, 500)
+    plot5.color_by = 'cell'
+
+    plot6 = openmc.Plot()
+    plot6.filename = 'basklet_plot_close_yz.png'
+    plot6.basis = 'yz'
+    plot6.origin = (-3.125, 0, 0)
+    plot6.width = (13, 13)
+    plot6.pixels = (500, 500)
+    plot6.color_by = 'cell'
+
+    plots = openmc.Plots([plot1,plot2,plot3,plot4,plot5,plot6])
+    plots.export_to_xml()
+
+plotter()

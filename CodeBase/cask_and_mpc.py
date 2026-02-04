@@ -1,5 +1,6 @@
 import openmc
 from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
+from fuel_blanket_and_pebbles import finite_universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
 #everything will be in inches multipled by the conversion factor
@@ -179,9 +180,28 @@ def MPC():
 
     return MPC
 
+def MPC_Void():
+
+    BCC = finite_universe()
+
+    ### represents the cylindrical shape inside the MPC to be filled
+
+    void_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 -1) * cm) #same as mpc_top_bot
+    void_base = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm) # Same as mpc_base_top
+
+    void_cyl = openmc.ZCylinder(r= 68.5/2 * cm) # same as mpc_inner
+
+    Void_Region = -void_cyl & -void_top & +void_base
+
+    voidcel = openmc.Cell(name='Inside_MPC',
+                          region=Void_Region,
+                          fill = BCC)
+    
+    return voidcel
+
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells()])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Void()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 materials.export_to_xml()

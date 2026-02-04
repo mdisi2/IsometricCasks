@@ -1,5 +1,5 @@
 import openmc
-from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316
+from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, AIR, He2
 from fuel_blanket_and_pebbles import finite_universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
@@ -199,6 +199,28 @@ def MPC_Void():
     
     return voidcel
 
+def Cask_and_MPC_universe(ex_mpc=AIR, en_mpc=He2):
+
+    """
+    Universe for the project impot file
+
+    ex_mpc : openmc material that fills the void space outside the MPC but inside the cask in the annuls and such
+
+    en_mpc : openmc material that fills the inside of the MPC, helium, seawater, etc
+
+    """
+
+    universe = openmc.Universe(name='Cask and MPC Universe')
+    universe.add_cells([MPC(), MPC_Concrete(), MPC_Steel(), 
+                                     Plates(),  Radial_Shield_Steel(), 
+                                     Radial_Shield_Concrete(), Overpack_Shells(), 
+                                     MPC_Void(He2)])
+    
+    return universe
+
+
+### TODO make void airspace outside cask
+
 settings = openmc.Settings()
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
 geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Void()])
@@ -222,7 +244,7 @@ plot1.filename = 'cask_xsection_yz_filled_stag.png'
 
 plot2 = openmc.Plot()
 plot2.basis = 'xy'
-plot2.origin = (0, 0, 248.7 / 2 * cm)
+plot2.origin = (0, 0, 248.9 / 2 * cm)
 plot2.width = (400, 400)
 plot2.pixels = (1200*3, 1200*3)
 plot2.color_by = 'cell'

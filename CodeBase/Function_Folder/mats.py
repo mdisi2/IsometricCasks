@@ -122,6 +122,25 @@ S_316_borated.add_element('B', B_wo, percent_type='wo')
 S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + B_wo) / 100 , percent_type='wo')
 
 
+
+#Ambient air
+AIR = openmc.Material(name='Air')
+AIR.set_density('g/cm3', 0.00120)
+AIR.add_element('N', 78.1 / 100, percent_type='wo')
+AIR.add_element('O', 20.95 / 100, percent_type='wo')
+AIR.add_element('Ar', 0.95 / 100, percent_type='wo')
+
+
+#helium for inside cask at normal conditions
+He2 = openmc.Material(name='Helium')
+He2.set_density('g/cm3', 0.000178)
+He2.add_element('He', 1.0, percent_type='ao')
+
+
+#accident case scenario where cask is submerged in water
+sea_water = openmc.Material(name='Sea Water')
+
+
 #### TODO : Make graphite for triso pebble 
 #### TODO : Make depleted particle compotision for each particle
 #### TODO : Or make smear triso pebble for entire pebble? 

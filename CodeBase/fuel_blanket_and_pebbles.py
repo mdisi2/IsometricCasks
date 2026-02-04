@@ -1,7 +1,7 @@
 import openmc 
 import numpy as np
 
-from Function_Folder.mats import S_316_borated, Concrete
+from Function_Folder.mats import S_316_borated, Concrete, He2
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
 ### In units [cm]
@@ -55,7 +55,7 @@ def F_Blanket():
 
 
 
-def Triso_Pebbles():
+def Triso_Pebbles(Pebble_Fill):
     #sphere in xy plane
 
     Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
@@ -74,11 +74,11 @@ def Triso_Pebbles():
 
     Triso_Pebble = openmc.Cell(name='Pebbles',
                                region=region ,
-                               fill=Concrete) # TODO triso pebble fill
+                               fill=Pebble_Fill)
 
     return Triso_Pebble
 
-def void_space(basket):
+def void_space(basket,void_fill):
 
     #Fill with water, air, helium
 
@@ -100,11 +100,11 @@ def void_space(basket):
 
     voidcel = openmc.Cell(name='void',
                           region=region,
-                          fill=Concrete) # TODO air
+                          fill=void_fill) # TODO air
 
     return voidcel
 
-def finite_universe():
+def finite_universe(en_mpc=He2):
 
     # MPC height = ~504.19 cm so at ~ 11 cell height = 46 to be safe
     # MPC diameter = 347.98 cm at  ~ 6.25 cell width = 57 to be safe
@@ -114,7 +114,8 @@ def finite_universe():
                            cells=(
                             blanket, 
                             Triso_Pebbles(),
-                            void_space(blanket)))
+                            void_space(basket=blanket,
+                                       void_fill= en_mpc)))
 
 
     finite = openmc.RectLattice(name='Basket Lattice')

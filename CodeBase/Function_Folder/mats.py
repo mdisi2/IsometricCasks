@@ -138,9 +138,24 @@ He2.add_element('He', 1.0, percent_type='ao')
 
 
 #accident case scenario where cask is submerged in water
-sea_water = openmc.Material(name='Sea Water')
+water = openmc.Material(name='Water')
 
 
 #### TODO : Make graphite for triso pebble 
 #### TODO : Make depleted particle compotision for each particle
 #### TODO : Or make smear triso pebble for entire pebble? 
+
+graphite = openmc.Material()
+graphite.set_density('g/cm3', 1.1995)
+graphite.add_element('C', 1.0)
+graphite.add_s_alpha_beta('c_Graphite')
+
+
+material_colors = {S_316.id : "#b71732",
+                   Concrete.id : '#aba596' , 
+                   He2.id : '#ebab63',
+                   water.id : '#1F3A5F',
+                   AIR.id : '#B7D9F2',
+                   A516_70.id : '#22223b',
+                   S_316_borated.id : "#5c0110",
+                   graphite.id : "#2B2828"}

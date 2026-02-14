@@ -47,8 +47,7 @@ cells = [openmc.Cell(fill=fuel, region=-spheres[0]),
 triso_univ = openmc.Universe(cells=cells)
 
 Sphere_Where_Trisos_Exist = openmc.Sphere(r=2.5,boundary_type='transmission') # out of the 3cm r, only 0.5 thickness region on edge with no fuel
-region = Sphere_Where_Trisos_Exist
-
+region = -Sphere_Where_Trisos_Exist
 
 
 outer_radius = 425.*1e-4
@@ -66,21 +65,21 @@ pitch = (upper_right - lower_left)/shape
 lattice = openmc.model.create_triso_lattice(
     trisos, lower_left, pitch, shape, graphite)
 
-universe = openmc.Universe(cells=[box])
+box = openmc.Cell(region=region, fill=lattice)
 
+universe = openmc.Universe(cells=[box])
 geometry = openmc.Geometry(universe)
 geometry.export_to_xml()
 
 materials = list(geometry.get_all_materials().values())
 openmc.Materials(materials).export_to_xml()
 
-settings = openmc.Settings()
-settings.run_mode = 'plot'
-settings.export_to_xml()
-
-plot = openmc.Plot.from_geometry(geometry)
-plot.to_ipython_image()
-
+plot = openmc.Plot()
+plot.origin = (0,0,0)
+plot.width = (6,6)
+plot.pixels = (1000,1000)
 plot.color_by = 'material'
 plot.colors = {graphite: 'gray'}
-plot.to_ipython_image()
+
+plots = openmc.Plots([plot])
+plots.export_to_xml()

@@ -153,14 +153,8 @@ def Blanket_and_Pebble_Universe(coolant=He):
 
 def plotter():
 
-    settings = openmc.Settings()
-    materials = openmc.Materials([S_316_borated, Concrete])
     geometry = openmc.Geometry([F_Blanket(), Triso_Pebbles()])
     geometry.root_universe.bounding_region = Boundary_Region
-
-    materials.export_to_xml()
-    geometry.export_to_xml()
-    settings.export_to_xml()
 
     # Plotting hehe
 

@@ -1,13 +1,16 @@
 ### Material Library for Cask materials and TRISO Pebble materials
 
 import openmc
+import os
 
-materials_zoey = openmc.Materials.from_xml("materials_zoey.xml")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+materials_path = os.path.join(script_dir, "materials_zoey.xml")
+materials_zoey = openmc.Materials.from_xml(materials_path)
 
 ##########
 ### MPC Canister Stainless Steal S_316
 ##########
-S_316 = openmc.Material(name='Stainless Steel 316')
+S_316 = openmc.Material(material_id=1, name='Stainless Steel 316')
 
 # C Carbon - 0.08% maximum
 # Mn Manganese - 2.00% maximum
@@ -37,7 +40,7 @@ S_316.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0
 ############
 
 # Type II Portland Cement
-Concrete = openmc.Material(name='Concrete')
+Concrete = openmc.Material(material_id=2,name='Concrete')
 
 # Atomic number | Fraction by weight
 # 1 0.010000 
@@ -65,7 +68,7 @@ Concrete.add_element('Fe', 1 - (0.010000 + 0.001000 + 0.529107 + 0.016000 + 0.00
 
 #ASTM A516 Grade 70 / ASME SA516 Grade 70
 
-A516_70 = openmc.Material(name='A516_70')
+A516_70 = openmc.Material(material_id=3, name='A516_70')
 A516_70.set_density('g/cm3' , 7.85)
 
 ### https://www.azom.com/article.aspx?ArticleID=4787
@@ -91,7 +94,7 @@ A516_70.add_element('Fe',1-(0.1 + 0.6 + 1 + 0.03 + 0.03 + 0.02 + 0.3 + 0.3 + 0.0
 
 #Dosed Stainless Steel
 
-S_316_borated = openmc.Material(name='Fuel Basket')
+S_316_borated = openmc.Material(material_id=4, name='Fuel Basket')
 
 # C Carbon - 0.08% maximum
 # Mn Manganese - 2.00% maximum
@@ -125,7 +128,7 @@ S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0
 
 
 #Ambient air
-air = openmc.Material(name='Air')
+air = openmc.Material(material_id=5, name='Air')
 air.set_density('g/cm3', 0.00120)
 air.add_element('N', 78.1 / 100, percent_type='wo')
 air.add_element('O', 20.95 / 100, percent_type='wo')
@@ -141,11 +144,10 @@ for m in materials_zoey:
 
 #accident case scenario where cask is submerged in water
 #Wouldnt it become steam?  
-water = openmc.Material(name='Water')
+water = openmc.Material(material_id=6, name='Water')
 water.set_density('g/cm3' , 1.00)
 water.add_element('H', 2, percent_type = 'ao')
 water.add_element('O', 1, percent_type = 'ao')
-
 
 
 # material_colors = {S_316.id : "#b71732",
@@ -160,7 +162,7 @@ water.add_element('O', 1, percent_type = 'ao')
 
 depleted_fuel = None
 for m in materials_zoey:
-    if m.id == 13:
+    if m.name == 'depleted kernel':
         depleted_fuel = m
         break
 
@@ -172,13 +174,13 @@ for m in materials_zoey:
 
 buffer = None
 for m in materials_zoey:
-    if m.name == 'buffer' or m.id == 15:
+    if m.name == 'buffer':
         buffer = m
         break
 
 SiC = None 
 for m in materials_zoey:
-    if m.name == 'SiC' or m.id == 17:
+    if m.name == 'SiC':
         SiC = m
         break
 
@@ -187,3 +189,6 @@ for m in materials_zoey:
     if m.name == 'PyC' :
         PyC = m
         break
+
+materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC])
+materials.export_to_xml('materials.xml')

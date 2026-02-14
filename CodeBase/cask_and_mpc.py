@@ -1,5 +1,5 @@
 import openmc
-from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, air, He, graphite
+from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC
 from fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
@@ -155,7 +155,6 @@ def MPC_Steel():
 
     return MPC_Outer_Steel
 
-
 def MPC():
 
     mpc_outer = openmc.ZCylinder(r= 69.5/2 * cm)
@@ -222,11 +221,11 @@ def Cask_and_MPC_universe(ex_mpc=air, en_mpc=He):
 ### TODO make void airspace outside cask
 
 settings = openmc.Settings()
-materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316])
+
+
 geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Void()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
-materials.export_to_xml()
 geometry.export_to_xml()
 settings.export_to_xml()
 
@@ -241,7 +240,6 @@ plot1.color_by = 'cell'
 plot1.type = 'slice'
 plot1.filename = 'cask_xsection_yz_filled_stag.png'
 
-
 plot2 = openmc.Plot()
 plot2.basis = 'xy'
 plot2.origin = (0, 0, 248.9 / 2 * cm)
@@ -253,3 +251,4 @@ plot2.filename = 'cask_xsection_xy_filled_stag.png'
 
 plots = openmc.Plots([plot1,plot2])
 plots.export_to_xml()
+openmc.plot_geometry()

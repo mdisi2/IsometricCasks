@@ -2,6 +2,8 @@
 
 import openmc
 
+materials_zoey = openmc.Materials.from_xml("materials_zoey.xml")
+
 ##########
 ### MPC Canister Stainless Steal S_316
 ##########
@@ -122,40 +124,66 @@ S_316_borated.add_element('B', B_wo, percent_type='wo')
 S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + B_wo) / 100 , percent_type='wo')
 
 
-
 #Ambient air
-AIR = openmc.Material(name='Air')
-AIR.set_density('g/cm3', 0.00120)
-AIR.add_element('N', 78.1 / 100, percent_type='wo')
-AIR.add_element('O', 20.95 / 100, percent_type='wo')
-AIR.add_element('Ar', 0.95 / 100, percent_type='wo')
+air = openmc.Material(name='Air')
+air.set_density('g/cm3', 0.00120)
+air.add_element('N', 78.1 / 100, percent_type='wo')
+air.add_element('O', 20.95 / 100, percent_type='wo')
+air.add_element('Ar', 0.95 / 100, percent_type='wo')
 
 
 #helium for inside cask at normal conditions
-He2 = openmc.Material(name='Helium')
-He2.set_density('g/cm3', 0.000178)
-He2.add_element('He', 1.0, percent_type='ao')
-
+He  = None
+for m in materials_zoey:
+    if m.name == 'He':
+        He = m
+        break
 
 #accident case scenario where cask is submerged in water
+#Wouldnt it become steam?  
 water = openmc.Material(name='Water')
+water.set_density('g/cm3' , 1.00)
+water.add_element('H', 2, percent_type = 'ao')
+water.add_element('O', 1, percent_type = 'ao')
 
 
-#### TODO : Make graphite for triso pebble 
-#### TODO : Make depleted particle compotision for each particle
-#### TODO : Or make smear triso pebble for entire pebble? 
 
-graphite = openmc.Material()
-graphite.set_density('g/cm3', 1.1995)
-graphite.add_element('C', 1.0)
-graphite.add_s_alpha_beta('c_Graphite')
+# material_colors = {S_316.id : "#b71732",
+#                    Concrete.id : '#aba596' , 
+#                    He.id : '#ebab63',
+#                    water.id : '#1F3A5F',
+#                    AIR.id : '#B7D9F2',
+#                    A516_70.id : '#22223b',
+#                    S_316_borated.id : "#5c0110",
+#                    graphite.id : "#2B2828"}
 
 
-material_colors = {S_316.id : "#b71732",
-                   Concrete.id : '#aba596' , 
-                   He2.id : '#ebab63',
-                   water.id : '#1F3A5F',
-                   AIR.id : '#B7D9F2',
-                   A516_70.id : '#22223b',
-                   S_316_borated.id : "#5c0110",
-                   graphite.id : "#2B2828"}
+depleted_fuel = None
+for m in materials_zoey:
+    if m.id == 13:
+        depleted_fuel = m
+        break
+
+graphite = None 
+for m in materials_zoey:
+    if m.name == 'graphite' :
+        graphite = m
+        break
+
+buffer = None
+for m in materials_zoey:
+    if m.name == 'buffer' or m.id == 15:
+        buffer = m
+        break
+
+SiC = None 
+for m in materials_zoey:
+    if m.name == 'SiC' or m.id == 17:
+        SiC = m
+        break
+
+PyC = None 
+for m in materials_zoey:
+    if m.name == 'PyC' :
+        PyC = m
+        break

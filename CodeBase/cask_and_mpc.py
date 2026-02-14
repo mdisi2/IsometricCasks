@@ -1,6 +1,6 @@
 import openmc
-from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, AIR, He2
-from fuel_blanket_and_pebbles import finite_universe
+from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, air, He, graphite
+from fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
 #everything will be in inches multipled by the conversion factor
@@ -182,7 +182,7 @@ def MPC():
 
 def MPC_Void():
 
-    BCC = finite_universe()
+    BCC = Blanket_and_Pebble_Universe(coolant=He)
 
     ### represents the cylindrical shape inside the MPC to be filled
 
@@ -199,7 +199,7 @@ def MPC_Void():
     
     return voidcel
 
-def Cask_and_MPC_universe(ex_mpc=AIR, en_mpc=He2):
+def Cask_and_MPC_universe(ex_mpc=air, en_mpc=He):
 
     """
     Universe for the project impot file
@@ -214,7 +214,7 @@ def Cask_and_MPC_universe(ex_mpc=AIR, en_mpc=He2):
     universe.add_cells([MPC(), MPC_Concrete(), MPC_Steel(), 
                                      Plates(),  Radial_Shield_Steel(), 
                                      Radial_Shield_Concrete(), Overpack_Shells(), 
-                                     MPC_Void(He2)])
+                                     MPC_Void()])
     
     return universe
 

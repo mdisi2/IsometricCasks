@@ -1,7 +1,8 @@
 import openmc 
 import numpy as np
 
-from Function_Folder.mats import S_316_borated, Concrete, He2
+from Function_Folder.mats import S_316_borated, Concrete, He, graphite
+from Function_Folder.Triso_Pebble_Land import Depleted_Triso_Universe
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
 ### In units [cm]
@@ -55,7 +56,7 @@ def F_Blanket():
 
 
 
-def Triso_Pebbles(Pebble_Fill):
+def Triso_Pebbles():
     #sphere in xy plane
 
     Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
@@ -74,13 +75,17 @@ def Triso_Pebbles(Pebble_Fill):
 
     Triso_Pebble = openmc.Cell(name='Pebbles',
                                region=region ,
-                               fill=Pebble_Fill)
+                               fill=Depleted_Triso_Universe())
 
     return Triso_Pebble
 
-def void_space(basket,void_fill):
+def void_space(void_fill=He):
 
-    #Fill with water, air, helium
+    """
+    :input basket: the cell of the basket
+    :type basket: 
+    :input void_fill: the material that is not filled by a pebble or the basket, should be helium or water in accident scenario  
+    """
 
     Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
     
@@ -96,7 +101,7 @@ def void_space(basket,void_fill):
     
     region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
-    region = Boundary_Region & ~(region_pebbles| basket.region)
+    region = Boundary_Region & ~(region_pebbles| F_Blanket().region)
 
     voidcel = openmc.Cell(name='void',
                           region=region,
@@ -104,7 +109,13 @@ def void_space(basket,void_fill):
 
     return voidcel
 
-def finite_universe(en_mpc=He2):
+def Blanket_and_Pebble_Universe(coolant=He):
+    """
+    Returns the lattice universe of the blanket and the triso pebbles
+    
+    :input coolant: this is what fills the voidspace
+    :coolant type: openmc material
+    """
 
     # MPC height = ~504.19 cm so at ~ 11 cell height = 46 to be safe
     # MPC diameter = 347.98 cm at  ~ 6.25 cell width = 57 to be safe
@@ -114,16 +125,13 @@ def finite_universe(en_mpc=He2):
                            cells=(
                             blanket, 
                             Triso_Pebbles(),
-                            void_space(basket=blanket,
-                                       void_fill= en_mpc)))
+                            void_space(void_fill=He)))
 
 
     finite = openmc.RectLattice(name='Basket Lattice')
     finite.pitch = (6.25, 6.25, 11.006257)
     finite.lower_left = (-175, -175, 50)
-
     finite.universes = np.full((60, 60, 50),unit)
-
 
     #Bounding Box
     xmin = openmc.XPlane(x0=-175)

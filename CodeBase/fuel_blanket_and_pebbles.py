@@ -78,19 +78,12 @@ def Triso_Pebbles():
     cells = []
 
     for sphere, center in pebbles:
-        c = openmc.Cell(fill=Depleted_Triso_Universe(), region=-sphere & Boundary_Region)
+        c = openmc.Cell(fill=Depleted_Triso_Universe(), region= -sphere & Boundary_Region)
         c.translation = center
 
         cells.append(c)
     
-    return cells
-
-
-    # Triso_Pebble = openmc.Cell(name='Pebbles',
-    #                            region=region ,
-    #                            fill=Depleted_Triso_Universe())
-
-    # return Triso_Pebble
+    return cells 
 
 def void_space(void_fill=He):
 
@@ -100,21 +93,21 @@ def void_space(void_fill=He):
     :input void_fill: the material that is not filled by a pebble or the basket, should be helium or water in accident scenario  
     """
 
-    # Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
+    Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
     
-    # t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
-    # t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
-    # t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
-    # t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
+    t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
+    t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
+    t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
+    t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
 
-    # b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
-    # b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
-    # b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
-    # b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
+    b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
+    b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
+    b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
+    b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
     
-    # region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
+    region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
-    region = ~((pebble.region for pebble in Triso_Pebbles()) | F_Blanket().region)
+    region = ~(region_pebbles| F_Blanket().region)
 
     voidcel = openmc.Cell(name='void',
                           region=region,
@@ -134,11 +127,9 @@ def Blanket_and_Pebble_Universe():
     # MPC diameter = 347.98 cm at  ~ 6.25 cell width = 57 to be safe
 
     blanket = F_Blanket()
+    pebbles = Triso_Pebbles()
     unit = openmc.Universe(name='unit cell',
-                           cells=(
-                            blanket, 
-                            *Triso_Pebbles()))#,
-                           # void_space(void_fill=He)))
+                           cells=[blanket, *pebbles, void_space(void_fill=He)])
 
 
     finite = openmc.RectLattice(name='Basket Lattice')
@@ -166,8 +157,9 @@ def Blanket_and_Pebble_Universe():
 
 def plotter():
     
-    geometry = openmc.Geometry([Boundary_Region, F_Blanket(), *Triso_Pebbles()])
+    geometry = openmc.Geometry([F_Blanket(), *Triso_Pebbles()]) #void_space(void_fill=He)])
     geometry.root_universe.bounding_region = Boundary_Region
+    geometry.export_to_xml()
 
     # Plotting hehe
 
@@ -177,7 +169,7 @@ def plotter():
     plot1.origin = (0, 0, 0)
     plot1.width = (13, 13)
     plot1.pixels = (500, 500)
-    plot1.color_by = 'material'
+    plot1.color_by = 'cell'
 
     plot2 = openmc.Plot()
     plot2.filename = 'basklet_plot_far_xz.png'
@@ -185,7 +177,7 @@ def plotter():
     plot2.origin = (0, 3.1249, 0)
     plot2.width = (13, 13)
     plot2.pixels = (500, 500)
-    plot2.color_by = 'material'
+    plot2.color_by = 'cell'
 
     plot3 = openmc.Plot()
     plot3.filename = 'basklet_plot_close_xz.png'
@@ -193,7 +185,7 @@ def plotter():
     plot3.origin = (0, -3.124, 0)
     plot3.width = (13, 13)
     plot3.pixels = (500, 500)
-    plot3.color_by = 'material'
+    plot3.color_by = 'cell'
 
     ##YZ Plots
 
@@ -203,7 +195,7 @@ def plotter():
     plot4.origin = (0, 0, 0)
     plot4.width = (13, 13)
     plot4.pixels = (500, 500)
-    plot4.color_by = 'material'
+    plot4.color_by = 'cell'
 
     plot5 = openmc.Plot()
     plot5.filename = 'basklet_plot_far_yz.png'
@@ -211,7 +203,7 @@ def plotter():
     plot5.origin = (3.1249, 0, 0)
     plot5.width = (13, 13)
     plot5.pixels = (500, 500)
-    plot5.color_by = 'material'
+    plot5.color_by = 'cell'
 
     plot6 = openmc.Plot()
     plot6.filename = 'basklet_plot_close_yz.png'
@@ -219,7 +211,7 @@ def plotter():
     plot6.origin = (-3.125, 0, 0)
     plot6.width = (13, 13)
     plot6.pixels = (500, 500)
-    plot6.color_by = 'material'
+    plot6.color_by = 'cell'
 
     plots = openmc.Plots([plot1,plot2,plot3,plot4,plot5,plot6])
     plots.export_to_xml()

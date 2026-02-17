@@ -50,7 +50,7 @@ fuel_zone = openmc.Sphere(r=2.5)
 
 centers = openmc.model.pack_spheres(radius=outer_radius_particle,
                                     region=-fuel_zone,
-                                    pf=0.0946,
+                                    pf=0.094,
                                     seed=621)
 
 print("Number of TRISOs:", len(centers))

@@ -10,12 +10,40 @@ cm = 2.54 # 1-inch = 2.54cm
 def Boudary_Region():
 
     outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
-    h0 = openmc.ZPlane(z0=0, boundary_type='vacuum')
+    h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
     hT = openmc.ZPlane(z0=233 * cm, boundary_type='vacuum')
 
-    Region = -outer_cyl & +h0 & -hT
+    Region_cyl = -outer_cyl & +h0 & -hT
 
-    return Region
+    x1 = openmc.XPlane(x0 = -240 * cm, boundary_type='vacuum')
+    x2 = openmc.XPlane(x0 = 240 * cm, boundary_type='vacuum')
+    y1 = openmc.YPlane(y0 = -240 * cm, boundary_type='vacuum')
+    y2 = openmc.YPlane(y0 = 240 * cm, boundary_type='vacuum')
+    z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
+    zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
+
+    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+
+    return Region_cyl
+
+def Space_Outside_Cask():
+    
+    outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
+    h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
+    hT = openmc.ZPlane(z0=233 * cm, boundary_type='vacuum')
+
+    Region_cyl = -outer_cyl & +h0 & -hT
+
+    x1 = openmc.XPlane(x0 = -240 * cm, boundary_type='vacuum')
+    x2 = openmc.XPlane(x0 = 240 * cm, boundary_type='vacuum')
+    y1 = openmc.YPlane(y0 = -240 * cm, boundary_type='vacuum')
+    y2 = openmc.YPlane(y0 = 240 * cm, boundary_type='vacuum')
+    z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
+    zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
+
+    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+
+    return -Region_rec & ~Region_cyl
 
 
 def Overpack_Shells():
@@ -28,20 +56,13 @@ def Overpack_Shells():
     inner_cyl_outer = openmc.ZCylinder(r=75/2 * cm)
     inner_cyl_inner = openmc.ZCylinder(r=73.5/2 *cm )
 
-    topper_outer = openmc.ZCylinder(r=131/2 * cm)
-    topper_inner = openmc.ZCylinder(r=73.5/2 * cm)
-
     h0 = openmc.ZPlane(z0=2 * cm)
-    hT = openmc.ZPlane(z0 = (231.25 - (6)) * cm)
-
-    H = openmc.ZPlane(z0 = (231.25 - (6)) * cm)
-    HB = openmc.ZPlane(z0 = (231.25 - (7.5)) * cm)
+    hT = openmc.ZPlane(z0 = (231.75-4) *cm)
 
     outer_shell_region = -outer_cyl_outer & +outer_cyl_inner & -hT & +h0
     inner_shell_region = -inner_cyl_outer & +inner_cyl_inner & -hT & +h0 
-    topper_region = -topper_outer & +topper_inner & -H & +HB
 
-    Overpack_Region = outer_shell_region | inner_shell_region | topper_region
+    Overpack_Region = outer_shell_region | inner_shell_region
 
     Overpack = openmc.cell.Cell(name='Overpack Shells', fill=A516_70, region=Overpack_Region)
 
@@ -55,7 +76,7 @@ def Radial_Shield_Concrete():
     concrete_inner = openmc.ZCylinder(r=(131/2 - 26.75) * cm) #26.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
-    ht = openmc.ZPlane(z0 = (231.25 - (7.5)) * cm)
+    ht = openmc.ZPlane(z0 = (231.75-4) *cm)
 
     Concrete_Region = -concrete_outer & +concrete_inner & +h0 & -ht
 
@@ -68,13 +89,13 @@ def Radial_Shield_Concrete():
 
 def Radial_Shield_Steel():
 
-    # not sure yet
+    #gamma sheild 
     
     steel_outer = openmc.ZCylinder(r=(131/2 - 26.75) * cm)
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
 
     h0 = openmc.ZPlane(z0 = 2*cm)
-    ht = openmc.ZPlane((231.25 - (7.5)) * cm)
+    ht = openmc.ZPlane(z0 = (231.75-4) *cm)
 
     Steel_Region = -steel_outer & +steel_inner & +h0 & -ht
 
@@ -179,9 +200,9 @@ def MPC():
 
     return MPC
 
-def MPC_Void():
+def MPC_Inside():
 
-    BCC = Blanket_and_Pebble_Universe(coolant=He)
+    BCC = Blanket_and_Pebble_Universe()
 
     ### represents the cylindrical shape inside the MPC to be filled
 
@@ -198,7 +219,7 @@ def MPC_Void():
     
     return voidcel
 
-def Cask_and_MPC_universe(ex_mpc=air, en_mpc=He):
+def Cask_and_MPC_universe():
 
     """
     Universe for the project impot file
@@ -213,7 +234,7 @@ def Cask_and_MPC_universe(ex_mpc=air, en_mpc=He):
     universe.add_cells([MPC(), MPC_Concrete(), MPC_Steel(), 
                                      Plates(),  Radial_Shield_Steel(), 
                                      Radial_Shield_Concrete(), Overpack_Shells(), 
-                                     MPC_Void()])
+                                     MPC_Inside()])
     
     return universe
 
@@ -223,7 +244,7 @@ def Cask_and_MPC_universe(ex_mpc=air, en_mpc=He):
 settings = openmc.Settings()
 
 
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Void()])
+geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Inside()])
 geometry.root_universe.bounding_region = Boudary_Region()
 
 geometry.export_to_xml()
@@ -235,7 +256,7 @@ plot1 = openmc.Plot()
 plot1.basis = 'xz'
 plot1.origin = (0, 2, 240 / 2 * cm)
 plot1.width = (400, 700)
-plot1.pixels = (1600*4, 1400*8)
+plot1.pixels = (1600, 1400*2)
 plot1.color_by = 'cell'
 plot1.type = 'slice'
 plot1.filename = 'cask_xsection_yz_filled_stag.png'
@@ -244,7 +265,7 @@ plot2 = openmc.Plot()
 plot2.basis = 'xy'
 plot2.origin = (0, 0, 248.9 / 2 * cm)
 plot2.width = (400, 400)
-plot2.pixels = (1200*6, 1200*6)
+plot2.pixels = (1200*2, 1200*2)
 plot2.color_by = 'cell'
 plot2.type = 'slice'
 plot2.filename = 'cask_xsection_xy_filled_stag.png'

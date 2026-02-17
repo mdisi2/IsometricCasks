@@ -191,4 +191,4 @@ for m in materials_zoey:
         break
 
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC])
-materials.export_to_xml('materials.xml')
+# materials.export_to_xml('materials.xml')

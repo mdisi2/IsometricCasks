@@ -1,9 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <plots>
-  <plot id="1" color_by="material" type="slice" basis="xy">
-    <pixels>1000 1000</pixels>
+  <plot id="1" filename="basket_plot_origin_xz.png" color_by="material" type="slice" basis="xz">
+    <pixels>500 500</pixels>
     <origin>0 0 0</origin>
-    <width>6 6</width>
-    <color id="1005" rgb="128 128 128"/>
+    <width>13 13</width>
+  </plot>
+  <plot id="2" filename="basklet_plot_far_xz.png" color_by="material" type="slice" basis="xz">
+    <pixels>500 500</pixels>
+    <origin>0 3.1249 0</origin>
+    <width>13 13</width>
+  </plot>
+  <plot id="3" filename="basklet_plot_close_xz.png" color_by="material" type="slice" basis="xz">
+    <pixels>500 500</pixels>
+    <origin>0 -3.124 0</origin>
+    <width>13 13</width>
+  </plot>
+  <plot id="4" filename="basket_plot_origin_yz.png" color_by="material" type="slice" basis="yz">
+    <pixels>500 500</pixels>
+    <origin>0 0 0</origin>
+    <width>13 13</width>
+  </plot>
+  <plot id="5" filename="basklet_plot_far_yz.png" color_by="material" type="slice" basis="yz">
+    <pixels>500 500</pixels>
+    <origin>3.1249 0 0</origin>
+    <width>13 13</width>
+  </plot>
+  <plot id="6" filename="basklet_plot_close_yz.png" color_by="material" type="slice" basis="yz">
+    <pixels>500 500</pixels>
+    <origin>-3.125 0 0</origin>
+    <width>13 13</width>
   </plot>
 </plots>

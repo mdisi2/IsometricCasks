@@ -1,5 +1,5 @@
 import openmc
-from Function_Folder.mats import S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC
+from Function_Folder.material_init import S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC
 from fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
@@ -235,7 +235,7 @@ plot1 = openmc.Plot()
 plot1.basis = 'xz'
 plot1.origin = (0, 2, 240 / 2 * cm)
 plot1.width = (400, 700)
-plot1.pixels = (1600, 1400*2)
+plot1.pixels = (1600*4, 1400*8)
 plot1.color_by = 'cell'
 plot1.type = 'slice'
 plot1.filename = 'cask_xsection_yz_filled_stag.png'
@@ -244,7 +244,7 @@ plot2 = openmc.Plot()
 plot2.basis = 'xy'
 plot2.origin = (0, 0, 248.9 / 2 * cm)
 plot2.width = (400, 400)
-plot2.pixels = (1200*3, 1200*3)
+plot2.pixels = (1200*6, 1200*6)
 plot2.color_by = 'cell'
 plot2.type = 'slice'
 plot2.filename = 'cask_xsection_xy_filled_stag.png'

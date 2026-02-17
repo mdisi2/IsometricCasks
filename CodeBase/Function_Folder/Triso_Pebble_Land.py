@@ -1,7 +1,7 @@
 from math import pi
 import numpy as np
 import openmc
-from mats import SiC, PyC, buffer, depleted_fuel, graphite
+from .material_init import SiC, PyC, buffer, depleted_fuel, graphite
 
 # depleted_fuel = None
 # for m in materials_zoey:
@@ -50,7 +50,7 @@ fuel_zone = openmc.Sphere(r=2.5)
 
 centers = openmc.model.pack_spheres(radius=outer_radius_particle,
                                     region=-fuel_zone,
-                                    pf=0.1,
+                                    pf=0.0946,
                                     seed=621)
 
 print("Number of TRISOs:", len(centers))
@@ -86,13 +86,13 @@ geom.export_to_xml()
 def Depleted_Triso_Universe():
     return root_univ
 
-plot = openmc.Plot()
-plot.origin = (0,0,0)
-plot.width = (6,6)
-plot.pixels = (1000,1000)
-plot.color_by = 'material'
-plot.colors = {graphite: 'gray'}
+# plot = openmc.Plot()
+# plot.origin = (0,0,0)
+# plot.width = (6,6)
+# plot.pixels = (1000,1000)
+# plot.color_by = 'material'
+# plot.colors = {graphite: 'gray'}
 
-plots = openmc.Plots([plot])
-plots.export_to_xml()
-openmc.plot_geometry()
+# plots = openmc.Plots([plot])
+# plots.export_to_xml()
+# openmc.plot_geometry()

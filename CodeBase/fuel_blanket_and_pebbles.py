@@ -1,7 +1,7 @@
 import openmc 
 import numpy as np
 
-from Function_Folder.mats import S_316_borated, Concrete, He, graphite
+from Function_Folder.material_init import S_316_borated, Concrete, He, graphite
 from Function_Folder.Triso_Pebble_Land import Depleted_Triso_Universe
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
@@ -50,7 +50,7 @@ def F_Blanket():
 
     frame = openmc.Cell(name='blanket',
                         region = (frame_region_yz | frame_region_xz) & Boundary_Region,
-                        fill = Concrete)
+                        fill = S_316_borated)
     
     return frame
 
@@ -164,7 +164,7 @@ def plotter():
     plot1.origin = (0, 0, 0)
     plot1.width = (13, 13)
     plot1.pixels = (500, 500)
-    plot1.color_by = 'cell'
+    plot1.color_by = 'material'
 
     plot2 = openmc.Plot()
     plot2.filename = 'basklet_plot_far_xz.png'
@@ -172,15 +172,15 @@ def plotter():
     plot2.origin = (0, 3.1249, 0)
     plot2.width = (13, 13)
     plot2.pixels = (500, 500)
-    plot2.color_by = 'cell'
+    plot2.color_by = 'material'
 
     plot3 = openmc.Plot()
     plot3.filename = 'basklet_plot_close_xz.png'
     plot3.basis = 'xz'
-    plot3.origin = (0, -3.125, 0)
+    plot3.origin = (0, -3.124, 0)
     plot3.width = (13, 13)
     plot3.pixels = (500, 500)
-    plot3.color_by = 'cell'
+    plot3.color_by = 'material'
 
     ##YZ Plots
 
@@ -190,7 +190,7 @@ def plotter():
     plot4.origin = (0, 0, 0)
     plot4.width = (13, 13)
     plot4.pixels = (500, 500)
-    plot4.color_by = 'cell'
+    plot4.color_by = 'material'
 
     plot5 = openmc.Plot()
     plot5.filename = 'basklet_plot_far_yz.png'
@@ -198,7 +198,7 @@ def plotter():
     plot5.origin = (3.1249, 0, 0)
     plot5.width = (13, 13)
     plot5.pixels = (500, 500)
-    plot5.color_by = 'cell'
+    plot5.color_by = 'material'
 
     plot6 = openmc.Plot()
     plot6.filename = 'basklet_plot_close_yz.png'
@@ -206,7 +206,7 @@ def plotter():
     plot6.origin = (-3.125, 0, 0)
     plot6.width = (13, 13)
     plot6.pixels = (500, 500)
-    plot6.color_by = 'cell'
+    plot6.color_by = 'material'
 
     plots = openmc.Plots([plot1,plot2,plot3,plot4,plot5,plot6])
     plots.export_to_xml()

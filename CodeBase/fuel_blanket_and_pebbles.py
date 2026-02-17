@@ -2,7 +2,7 @@ import openmc
 import numpy as np
 
 from Function_Folder.material_init import S_316_borated, He
-from Function_Folder.Triso_Pebble_Land import Depleted_Triso_Universe
+from Function_Folder.triso_pebble_treatment import Depleted_Triso_Universe
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
 ### In units [cm]
@@ -85,7 +85,7 @@ def Triso_Pebbles():
     
     return cells 
 
-def void_space(void_fill=He):
+def void_space(void_fill):
 
     """
     :input basket: the cell of the basket
@@ -115,7 +115,7 @@ def void_space(void_fill=He):
 
     return voidcel
 
-def Blanket_and_Pebble_Universe():
+def Blanket_and_Pebble_Universe(void_fill):
     """
     Returns the lattice universe of the blanket and the triso pebbles
     
@@ -129,7 +129,7 @@ def Blanket_and_Pebble_Universe():
     blanket = F_Blanket()
     pebbles = Triso_Pebbles()
     unit = openmc.Universe(name='unit cell',
-                           cells=[blanket, *pebbles, void_space(void_fill=He)])
+                           cells=[blanket, *pebbles, void_space(void_fill)])
 
 
     finite = openmc.RectLattice(name='Basket Lattice')

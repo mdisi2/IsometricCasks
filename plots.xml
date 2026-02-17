@@ -1,13 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <plots>
-  <plot id="7" filename="cask_xsection_yz_filled_stag.png" color_by="cell" type="slice" basis="xz">
+  <plot id="7" filename="project_input_normal.png" color_by="material" type="slice" basis="xz">
     <pixels>1600 2800</pixels>
     <origin>0 2 304.8</origin>
     <width>400 700</width>
-  </plot>
-  <plot id="8" filename="cask_xsection_xy_filled_stag.png" color_by="cell" type="slice" basis="xy">
-    <pixels>2400 2400</pixels>
-    <origin>0 0 316.103</origin>
-    <width>400 400</width>
   </plot>
 </plots>

@@ -3,36 +3,6 @@ import numpy as np
 import openmc
 from .material_init import SiC, PyC, buffer, depleted_fuel, graphite
 
-# depleted_fuel = None
-# for m in materials_zoey:
-#     if m.name == 'depleted kernel':
-#         depleted_fuel = m
-#         break
-
-# graphite = None 
-# for m in materials_zoey:
-#     if m.name == 'graphite' :
-#         graphite = m
-#         break
-
-# buffer = None
-# for m in materials_zoey:
-#     if m.name == 'buffer':
-#         buffer = m
-#         break
-
-# SiC = None 
-# for m in materials_zoey:
-#     if m.name == 'SiC':
-#         SiC = m
-#         break
-
-# PyC = None 
-# for m in materials_zoey:
-#     if m.name == 'PyC' :
-#         PyC = m
-#         break
-
 spheres = [openmc.Sphere(r=r*1e-4) for r in [215.,315.,350.,385.]]
 
 cells = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]),
@@ -86,13 +56,6 @@ geom.export_to_xml()
 def Depleted_Triso_Universe():
     return root_univ
 
-# plot = openmc.Plot()
-# plot.origin = (0,0,0)
-# plot.width = (6,6)
-# plot.pixels = (1000,1000)
-# plot.color_by = 'material'
-# plot.colors = {graphite: 'gray'}
 
-# plots = openmc.Plots([plot])
-# plots.export_to_xml()
-# openmc.plot_geometry()
+
+### This file does everything it should, please do not touch!!! 

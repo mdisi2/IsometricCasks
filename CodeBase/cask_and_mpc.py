@@ -7,11 +7,11 @@ from fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
 
 cm = 2.54 # 1-inch = 2.54cm
 
-def Boudary_Region():
+def Boundary_Region():
 
     outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
     h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
-    hT = openmc.ZPlane(z0=233 * cm, boundary_type='vacuum')
+    hT = openmc.ZPlane(z0 = 231.75 *cm)
 
     Region_cyl = -outer_cyl & +h0 & -hT
 
@@ -24,26 +24,28 @@ def Boudary_Region():
 
     Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
 
-    return Region_cyl
+    return Region_rec
 
-def Space_Outside_Cask():
+def Space_Outside_Cask(void_fill):
     
-    outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
-    h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
-    hT = openmc.ZPlane(z0=233 * cm, boundary_type='vacuum')
+    outer_cyl = openmc.ZCylinder(r=132.5/2 * cm)
+    h0 = openmc.ZPlane(z0 = 0 * cm)
+    hT = openmc.ZPlane(z0 = 231.75 * cm)
 
     Region_cyl = -outer_cyl & +h0 & -hT
 
-    x1 = openmc.XPlane(x0 = -240 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 = 240 * cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -240 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 = 240 * cm, boundary_type='vacuum')
-    z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
+    x1 = openmc.XPlane(x0 =-140 * cm)
+    x2 = openmc.XPlane(x0 = 140 * cm)
+    y1 = openmc.YPlane(y0 =-140 * cm)
+    y2 = openmc.YPlane(y0 = 140 * cm)
+    z0 = openmc.ZPlane(z0 =-10 * cm)
+    zT = openmc.ZPlane(z0 = 240 * cm)
 
     Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
 
-    return -Region_rec & ~Region_cyl
+    cell = openmc.Cell(name='Outside Cask Space', fill=void_fill, region=Region_rec & ~Region_cyl)
+
+    return cell
 
 
 def Overpack_Shells():
@@ -134,7 +136,7 @@ def MPC_Concrete():
 
     #portland concrete ii
 
-    rad = openmc.ZCylinder(r=69.2/2 * cm)
+    rad = openmc.ZCylinder(r=69.5/2 * cm)
 
     top_conc_top = openmc.ZPlane(z0 = (231.75-4) *cm)
     top_conc_bot = openmc.ZPlane(z0 = (231.75-4-10.75) *cm)
@@ -156,7 +158,7 @@ def MPC_Concrete():
 
 def MPC_Steel():
 
-    rad = openmc.ZCylinder(r=69.2/2 * cm)
+    rad = openmc.ZCylinder(r=69.5/2 * cm)
 
     top_steel_top = openmc.ZPlane(z0 = (231.75-4-10.75) *cm)
     top_steel_bot = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75) * cm)
@@ -200,9 +202,9 @@ def MPC():
 
     return MPC
 
-def MPC_Inside():
+def MPC_Inside(mpc_void_fill=He):
 
-    BCC = Blanket_and_Pebble_Universe()
+    BCC = Blanket_and_Pebble_Universe(void_fill=mpc_void_fill)
 
     ### represents the cylindrical shape inside the MPC to be filled
 
@@ -219,57 +221,94 @@ def MPC_Inside():
     
     return voidcel
 
-def Cask_and_MPC_universe():
+def air_annulus(void_fill = air):
 
     """
-    Universe for the project impot file
+    returns cell for the annulus between the MPC and overpack shells
 
-    ex_mpc : openmc material that fills the void space outside the MPC but inside the cask in the annuls and such
+    :input void_fill: fills annulus, should be air or water in accident scenario
+    :type void_fill: openmc material
+    """
 
-    en_mpc : openmc material that fills the inside of the MPC, helium, seawater, etc
+    shell_inner_cyl_inner = openmc.ZCylinder(r=73.5/2 *cm )
+    mpc_outer_cyl = openmc.ZCylinder(r= 69.5/2 * cm)
+
+    top_plate_bottom = openmc.ZPlane(z0 = (231.75-4) *cm)
+    bot_plate_top = openmc.ZPlane(z0 = 2 *cm)
+
+    annulus_region = -shell_inner_cyl_inner & +mpc_outer_cyl & +bot_plate_top & -top_plate_bottom
+
+    #weird gap between mpc and steel above it 
+
+    air_gap_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75) * cm)
+    air_gap_bot =  openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1) * cm)
+    air_gap_rad = openmc.ZCylinder(r= 69.5/2 * cm)
+
+    air_gap_region_above = -air_gap_rad & +air_gap_bot & -air_gap_top
+
+    total_region = annulus_region | air_gap_region_above
+    
+    cell = openmc.Cell(name='Annulus', fill=void_fill, region=total_region)
+
+    return cell
+
+
+def Cask_and_MPC_Universe(mpc_cool_fill, annulus_fill, outside_fill):
+
+    """
+    Universe for the project import file
+
+    :input mpc_void_fill: material that fills the void space between pebbles and blanket
+    :input annulus_fill: material that fills the cask annulus 
+    :input outside_fill: material that fills space outside the cask 
 
     """
 
     universe = openmc.Universe(name='Cask and MPC Universe')
+
     universe.add_cells([MPC(), MPC_Concrete(), MPC_Steel(), 
-                                     Plates(),  Radial_Shield_Steel(), 
-                                     Radial_Shield_Concrete(), Overpack_Shells(), 
-                                     MPC_Inside()])
+                        Plates(),  Radial_Shield_Steel(), 
+                        Radial_Shield_Concrete(), Overpack_Shells(), 
+                        MPC_Inside(mpc_cool_fill), 
+                        air_annulus(annulus_fill),
+                        Space_Outside_Cask(outside_fill)])
     
     return universe
 
 
-### TODO make void airspace outside cask
 
-settings = openmc.Settings()
+def xml():
+    settings = openmc.Settings()
 
 
-geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(),MPC_Inside()])
-geometry.root_universe.bounding_region = Boudary_Region()
+    geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(), MPC_Inside(), air_annulus(air), Space_Outside_Cask(air)])
+    geometry.root_universe.bounding_region = Boundary_Region()
 
-geometry.export_to_xml()
-settings.export_to_xml()
+    geometry.export_to_xml()
+    settings.export_to_xml()
 
 # Plotting hehe
 
-plot1 = openmc.Plot()
-plot1.basis = 'xz'
-plot1.origin = (0, 2, 240 / 2 * cm)
-plot1.width = (400, 700)
-plot1.pixels = (1600, 1400*2)
-plot1.color_by = 'cell'
-plot1.type = 'slice'
-plot1.filename = 'cask_xsection_yz_filled_stag.png'
+def plotter():
 
-plot2 = openmc.Plot()
-plot2.basis = 'xy'
-plot2.origin = (0, 0, 248.9 / 2 * cm)
-plot2.width = (400, 400)
-plot2.pixels = (1200*2, 1200*2)
-plot2.color_by = 'cell'
-plot2.type = 'slice'
-plot2.filename = 'cask_xsection_xy_filled_stag.png'
+    plot1 = openmc.Plot()
+    plot1.basis = 'xz'
+    plot1.origin = (0, 2, 240 / 2 * cm)
+    plot1.width = (400, 700)
+    plot1.pixels = (1600, 1400*2)
+    plot1.color_by = 'material'
+    plot1.type = 'slice'
+    plot1.filename = 'cask_xsection_yz_filled_stag.png'
 
-plots = openmc.Plots([plot1,plot2])
-plots.export_to_xml()
-openmc.plot_geometry()
+    plot2 = openmc.Plot()
+    plot2.basis = 'xy'
+    plot2.origin = (0, 0, 248.9 / 2 * cm)
+    plot2.width = (400, 400)
+    plot2.pixels = (1200*2, 1200*2)
+    plot2.color_by = 'material'
+    plot2.type = 'slice'
+    plot2.filename = 'cask_xsection_xy_filled_stag.png'
+
+    plots = openmc.Plots([plot1,plot2])
+    plots.export_to_xml()
+    openmc.plot_geometry()

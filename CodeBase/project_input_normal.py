@@ -17,12 +17,12 @@ def Region_Outside_Cask():
 
     Region_cyl = -outer_cyl & +h0 & -hT
 
-    x1 = openmc.XPlane(x0 = -240 * cm)
-    x2 = openmc.XPlane(x0 = 240 * cm)
-    y1 = openmc.YPlane(y0 = -240 * cm)
-    y2 = openmc.YPlane(y0 = 240 * cm)
-    z0 = openmc.ZPlane(z0=-10 * cm)
-    zT = openmc.ZPlane(z0=240 * cm)
+    x1 = openmc.XPlane(x0 = -140 * cm)
+    x2 = openmc.XPlane(x0 = 140 * cm)
+    y1 = openmc.YPlane(y0 = -140 * cm)
+    y2 = openmc.YPlane(y0 = 140 * cm)
+    z0 = openmc.ZPlane(z0= -10 * cm)
+    zT = openmc.ZPlane(z0= 240 * cm)
 
     Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
 
@@ -40,8 +40,8 @@ geometry.export_to_xml()
 plot1 = openmc.Plot()
 plot1.basis = 'xz'
 plot1.origin = (0, 2, 240 / 2 * cm)
-plot1.width = (400, 700)
-plot1.pixels = (1600, 1400*2)
+plot1.width = ((cm * 2 * 140), (cm * 240))
+plot1.pixels = (1120*2, 1000*2)
 plot1.color_by = 'material'
 plot1.type = 'slice'
 plot1.filename = 'project_input_normal.png'

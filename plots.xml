@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <plots>
   <plot id="7" filename="project_input_normal.png" color_by="material" type="slice" basis="xz">
-    <pixels>1600 2800</pixels>
+    <pixels>2240 2000</pixels>
     <origin>0 2 304.8</origin>
-    <width>400 700</width>
+    <width>711.2 609.6</width>
   </plot>
 </plots>

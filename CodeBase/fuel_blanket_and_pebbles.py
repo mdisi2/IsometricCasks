@@ -1,7 +1,7 @@
 import openmc 
 import numpy as np
 
-from Function_Folder.material_init import S_316_borated, Concrete, He, graphite
+from Function_Folder.material_init import S_316_borated, He
 from Function_Folder.Triso_Pebble_Land import Depleted_Triso_Universe
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
@@ -57,27 +57,40 @@ def F_Blanket():
 
 
 def Triso_Pebbles():
+
+    """Returns a list of cells containing the triso pebbles filled with the triso particles and graphite"""
+
     #sphere in xy plane
 
-    Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
+    pebbles = [ 
+        (openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0) , (0,0,0)),
+        
+        (openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0) , (3.125, 3.125, 5.503)),
+        (openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0) , (-3.125, 3.125, 5.503)),
+        (openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0) , (-3.125, -3.125, 5.503)),
+        (openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0) , (3.125, -3.125, 5.503)),
+
+        (openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0) , (3.125, 3.125, -5.503)),
+        (openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0) , (-3.125, 3.125, -5.503)),
+        (openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0) , (-3.125, -3.125, -5.503)),
+        (openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0) , (3.125, -3.125, -5.503))]
     
-    t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
-    t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
+    cells = []
 
-    b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
-    b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
+    for sphere, center in pebbles:
+        c = openmc.Cell(fill=Depleted_Triso_Universe(), region=-sphere & Boundary_Region)
+        c.translation = center
+
+        cells.append(c)
     
-    region = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
+    return cells
 
-    Triso_Pebble = openmc.Cell(name='Pebbles',
-                               region=region ,
-                               fill=Depleted_Triso_Universe())
 
-    return Triso_Pebble
+    # Triso_Pebble = openmc.Cell(name='Pebbles',
+    #                            region=region ,
+    #                            fill=Depleted_Triso_Universe())
+
+    # return Triso_Pebble
 
 def void_space(void_fill=He):
 
@@ -87,29 +100,29 @@ def void_space(void_fill=He):
     :input void_fill: the material that is not filled by a pebble or the basket, should be helium or water in accident scenario  
     """
 
-    Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
+    # Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
     
-    t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
-    t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
+    # t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
+    # t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
+    # t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
+    # t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
 
-    b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
-    b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
+    # b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
+    # b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
+    # b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
+    # b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
     
-    region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
+    # region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
-    region = Boundary_Region & ~(region_pebbles| F_Blanket().region)
+    region = ~((pebble.region for pebble in Triso_Pebbles()) | F_Blanket().region)
 
     voidcel = openmc.Cell(name='void',
                           region=region,
-                          fill=void_fill) # TODO air
+                          fill=void_fill)
 
     return voidcel
 
-def Blanket_and_Pebble_Universe(coolant=He):
+def Blanket_and_Pebble_Universe():
     """
     Returns the lattice universe of the blanket and the triso pebbles
     
@@ -124,8 +137,8 @@ def Blanket_and_Pebble_Universe(coolant=He):
     unit = openmc.Universe(name='unit cell',
                            cells=(
                             blanket, 
-                            Triso_Pebbles(),
-                            void_space(void_fill=He)))
+                            *Triso_Pebbles()))#,
+                           # void_space(void_fill=He)))
 
 
     finite = openmc.RectLattice(name='Basket Lattice')
@@ -152,8 +165,8 @@ def Blanket_and_Pebble_Universe(coolant=He):
 
 
 def plotter():
-
-    geometry = openmc.Geometry([F_Blanket(), Triso_Pebbles()])
+    
+    geometry = openmc.Geometry([Boundary_Region, F_Blanket(), *Triso_Pebbles()])
     geometry.root_universe.bounding_region = Boundary_Region
 
     # Plotting hehe

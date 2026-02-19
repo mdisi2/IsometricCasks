@@ -120,7 +120,7 @@ def void_space(void_fill):
     
     region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
 
-    region = ~(region_pebbles| F_Blanket().region)
+    region = ~(region_pebbles| F_Blanket(S_316_borated).region)
 
     voidcel = openmc.Cell(name='void',
                           region=region,
@@ -170,7 +170,7 @@ def Blanket_and_Pebble_Universe(void_fill,blanket):
 
 def plotter():
     
-    geometry = openmc.Geometry([F_Blanket(), *Triso_Pebbles()]) #void_space(void_fill=He)])
+    geometry = openmc.Geometry([F_Blanket(S_316_borated), *Triso_Pebbles()]) #void_space(void_fill=He)])
     geometry.root_universe.bounding_region = Boundary_Region
     geometry.export_to_xml()
 

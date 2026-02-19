@@ -8,7 +8,8 @@ from Function_Folder.material_init import air, He, S_316_borated
 ### Space outside cask is filled with air
 ### S_316 doped to 1.0%
 
-# openmc.config['cross_sections'] = 
+path = '/home/matthewdisimone/Downloads/endfb80/endfb-viii.0-hdf5/cross_sections.xml'
+openmc.config['cross_sections'] = path
 
 cm = 2.54 # 1 inch = 2.54 cm
 
@@ -43,19 +44,29 @@ Cask_Universe = cam.Cask_and_MPC_Universe(mpc_cool_fill    =  He,
                                           outside_fill     =  air,
                                           blanket_material = S_316_borated)
 
-geometry = openmc.Geometry(Cask_Universe)
-geometry.root_universe.bounding_region = Boundary_Region()
+
+x1 = openmc.XPlane(x0 = -140/2 * cm, boundary_type='vacuum')
+x2 = openmc.XPlane(x0 =  140/2* cm, boundary_type='vacuum')
+y1 = openmc.YPlane(y0 = -140/2 * cm, boundary_type='vacuum')
+y2 = openmc.YPlane(y0 =  140/2 * cm, boundary_type='vacuum')
+z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
+zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
+
+boundary_region = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+root_cell = openmc.Cell(fill=Cask_Universe, region=boundary_region)
+root_universe = openmc.Universe(cells=[root_cell])
+
+geometry = openmc.Geometry(root_universe)
 geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
 settings.particles = 1000
 settings.batches   = 20
-settings.inactive  = 30
+settings.inactive  = 5
+settings.temperature = {'method': 'interpolation'}
 
-source = openmc.Source()
-source.space = openmc.CylindricalIndependent(r=(0,86.995), origin=(0,0,0))
-source.angle = openmc.stats.Isotropic()
+source = openmc.IndependentSource(constraints={'fissionable': True})
 settings.source = source
 
 mesh = openmc.RegularMesh()
@@ -66,24 +77,28 @@ mesh.upper_right = (140/2*cm, 140/2*cm, 240*cm)
 settings.entropy_mesh = mesh
 settings.export_to_xml()
 
-plot1 = openmc.Plot()
-plot1.basis = 'xz'
-plot1.origin = (0, 2, 240 / 2 * cm)
-plot1.width = ((cm * 2 * 70), (cm * 240))
-plot1.pixels = (700*5, 1200*5)
-plot1.color_by = 'material'
-plot1.type = 'slice'
-plot1.filename = 'xz-slice-normal-cond.png'
+# plot1 = openmc.Plot()
+# plot1.basis = 'xz'
+# plot1.origin = (0, 2, 240 / 2 * cm)
+# plot1.width = ((cm * 2 * 70), (cm * 240))
+# plot1.pixels = (700*5, 1200*5)
+# plot1.color_by = 'material'
+# plot1.type = 'slice'
+# plot1.filename = 'xz-slice-normal-cond.png'
 
-plot2 = openmc.Plot()
-plot2.basis = 'xy'
-plot2.origin = (0, 0, 240 / 2 * cm)
-plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
-plot2.pixels = (700*5, 1000*5)
-plot2.color_by = 'material'
-plot2.type = 'slice'
-plot2.filename = 'xy-slice-normal-cond.png'
+# plot2 = openmc.Plot()
+# plot2.basis = 'xy'
+# plot2.origin = (0, 0, 240 / 2 * cm)
+# plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
+# plot2.pixels = (1000*5, 1000*5)
+# plot2.color_by = 'material'
+# plot2.type = 'slice'
+# plot2.filename = 'xy-slice-normal-cond.png'
 
-plots = openmc.Plots([plot1,plot2])
-plots.export_to_xml()
-openmc.plot_geometry()
+# plots = openmc.Plots([plot1,plot2])
+# plots.export_to_xml()
+# openmc.plot_geometry()
+
+openmc.run()
+sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
+print("k-effective =", sp.k_combined)

@@ -281,6 +281,23 @@ def MPC_Inside(mpc_void_fill=He, blanket_material=S_316_borated):
     
     return voidcel
 
+def MPC_Inside_Region():
+
+    """
+    Returns cylindical inside region of MPC
+    """
+
+    ### represents the cylindrical shape inside the MPC to be filled with the BCC
+
+    void_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 -1) * cm) #same as mpc_top_bot
+    void_base = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm) # Same as mpc_base_top
+
+    void_cyl = openmc.ZCylinder(r= 68.5/2 * cm) # same as mpc_inner
+
+    Void_Region = -void_cyl & -void_top & +void_base
+    
+    return Void_Region
+
 def air_annulus(void_fill = air):
 
     """
@@ -362,7 +379,7 @@ def plotter():
     plot2.basis = 'xy'
     plot2.origin = (0, 0, 240 / 2 * cm)
     plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
-    plot2.pixels = (700*5, 1000*5)
+    plot2.pixels = (1000*5, 1000*5)
     plot2.color_by = 'material'
     plot2.type = 'slice'
     plot2.filename = 'xy-slice-normal-cond.png'
@@ -371,5 +388,5 @@ def plotter():
     plots.export_to_xml()
     openmc.plot_geometry()
 
-xml()
-plotter()
+#xml()
+#plotter()

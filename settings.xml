@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <settings>
   <run_mode>eigenvalue</run_mode>
+  <particles>1000</particles>
+  <batches>20</batches>
+  <inactive>5</inactive>
+  <source type="independent" strength="1.0" particle="neutron">
+    <constraints>
+      <fissionable>true</fissionable>
+    </constraints>
+  </source>
+  <entropy_mesh>1</entropy_mesh>
+  <mesh id="1">
+    <dimension>7 7 25</dimension>
+    <lower_left>-177.8 -177.8 -25.4</lower_left>
+    <upper_right>177.8 177.8 609.6</upper_right>
+  </mesh>
+  <temperature_method>interpolation</temperature_method>
 </settings>

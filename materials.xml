@@ -143,12 +143,12 @@
     <nuclide name="S36" wo="4.9064559282261095e-08"/>
     <nuclide name="N14" wo="0.0009960772133092955"/>
     <nuclide name="N15" wo="3.922786690704343e-06"/>
-    <nuclide name="B10" wo="0.0027533243812609886"/>
-    <nuclide name="B11" wo="0.01224667561873901"/>
-    <nuclide name="Fe54" wo="0.03696711524228449"/>
-    <nuclide name="Fe56" wo="0.6017712104485751"/>
-    <nuclide name="Fe57" wo="0.01414609368234152"/>
-    <nuclide name="Fe58" wo="0.0019155806267990734"/>
+    <nuclide name="B10" wo="0.001835549587507326"/>
+    <nuclide name="B11" wo="0.008164450412492674"/>
+    <nuclide name="Fe54" wo="0.03696993802139584"/>
+    <nuclide name="Fe56" wo="0.6018171612129647"/>
+    <nuclide name="Fe57" wo="0.014147173866648356"/>
+    <nuclide name="Fe58" wo="0.0019157268989911012"/>
   </material>
   <material id="5" name="Air">
     <density value="0.0012" units="g/cm3"/>

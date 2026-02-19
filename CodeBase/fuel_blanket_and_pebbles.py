@@ -17,7 +17,13 @@ y_2 = openmc.YPlane(y0 =  6.25 / 2)
 
 Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
 
-def F_Blanket():
+def F_Blanket(blanket):
+
+    """
+    2D Polygonal surface of the frame that the pebble will sit in, along 
+    with polygonal cuts. It is extended across the third axis to make the 
+    Isometric, corrugated, 'blanket' for each of the pebbles to lay on.
+    """
 
     frame_outer = np.array([(0.1,5.503),
                 (-0.1,5.503),
@@ -50,7 +56,7 @@ def F_Blanket():
 
     frame = openmc.Cell(name='blanket',
                         region = (frame_region_yz | frame_region_xz) & Boundary_Region,
-                        fill = S_316_borated)
+                        fill = blanket)
     
     return frame
 
@@ -58,7 +64,14 @@ def F_Blanket():
 
 def Triso_Pebbles():
 
-    """Returns a list of cells containing the triso pebbles filled with the triso particles and graphite"""
+    """
+    Returns a list of cells containing the triso pebbles filled with the
+    triso particles and graphite.
+
+    Triso pebbles are each initialized in the center, and 8 corners, then
+    filled by translating the trio region initialized in 
+    triso_pebble_treatment.py to the respective coordinates.
+    """
 
     #sphere in xy plane
 
@@ -115,9 +128,10 @@ def void_space(void_fill):
 
     return voidcel
 
-def Blanket_and_Pebble_Universe(void_fill):
+def Blanket_and_Pebble_Universe(void_fill,blanket):
     """
-    Returns the lattice universe of the blanket and the triso pebbles
+    Returns the lattice universe of the blanket and the filled 
+    triso pebbles
     
     :input coolant: this is what fills the voidspace
     :coolant type: openmc material
@@ -126,10 +140,9 @@ def Blanket_and_Pebble_Universe(void_fill):
     # MPC height = ~504.19 cm so at ~ 11 cell height = 46 to be safe
     # MPC diameter = 347.98 cm at  ~ 6.25 cell width = 57 to be safe
 
-    blanket = F_Blanket()
     pebbles = Triso_Pebbles()
     unit = openmc.Universe(name='unit cell',
-                           cells=[blanket, *pebbles, void_space(void_fill)])
+                           cells=[F_Blanket(blanket), *pebbles, void_space(void_fill)])
 
 
     finite = openmc.RectLattice(name='Basket Lattice')

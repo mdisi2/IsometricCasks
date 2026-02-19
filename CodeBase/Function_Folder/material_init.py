@@ -10,6 +10,7 @@ materials_zoey = openmc.Materials.from_xml(materials_path)
 ##########
 ### MPC Canister Stainless Steal S_316
 ##########
+
 S_316 = openmc.Material(material_id=1, name='Stainless Steel 316')
 
 # C Carbon - 0.08% maximum
@@ -35,9 +36,8 @@ S_316.add_element('S', 0.030 / 100, percent_type='wo')
 S_316.add_element('N', 0.1 / 100, percent_type='wo')
 S_316.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1) / 100 , percent_type='wo')
 
-############
-### Overpack
-############
+
+###Overpack
 
 # Type II Portland Cement
 Concrete = openmc.Material(material_id=2,name='Concrete')
@@ -109,7 +109,7 @@ S_316_borated = openmc.Material(material_id=4, name='Fuel Basket')
 
 # B - whatever i want, but in practice around 1.5 w%o
 
-B_wo = 1.5 / 100
+B_wo = 1.0 / 100
 
 S_316_borated.set_density('g/cm3',8.027)
 S_316_borated.add_element('C', 0.08 / 100 , percent_type='wo')
@@ -191,4 +191,5 @@ for m in materials_zoey:
         break
 
 materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC])
-# materials.export_to_xml('materials.xml')
+
+materials.export_to_xml('materials.xml')

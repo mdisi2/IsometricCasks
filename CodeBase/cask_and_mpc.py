@@ -9,16 +9,20 @@ cm = 2.54 # 1-inch = 2.54cm
 
 def Boundary_Region():
 
+    """
+    Boundary region of a rectangle slightly larger than the cask
+    """
+
     outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
     h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
     hT = openmc.ZPlane(z0 = 231.75 *cm)
 
     Region_cyl = -outer_cyl & +h0 & -hT
 
-    x1 = openmc.XPlane(x0 = -240 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 = 240 * cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -240 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 = 240 * cm, boundary_type='vacuum')
+    x1 = openmc.XPlane(x0 = -240/2 * cm, boundary_type='vacuum')
+    x2 = openmc.XPlane(x0 = 240/2 * cm, boundary_type='vacuum')
+    y1 = openmc.YPlane(y0 = -240/2 * cm, boundary_type='vacuum')
+    y2 = openmc.YPlane(y0 = 240/2 * cm, boundary_type='vacuum')
     z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
     zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
 
@@ -26,18 +30,22 @@ def Boundary_Region():
 
     return Region_rec
 
-def Space_Outside_Cask(void_fill):
-    
+def Outside_Cask(void_fill):
+
+    """
+    Space outside cask, fill with air or water
+    """
+
     outer_cyl = openmc.ZCylinder(r=132.5/2 * cm)
     h0 = openmc.ZPlane(z0 = 0 * cm)
     hT = openmc.ZPlane(z0 = 231.75 * cm)
 
     Region_cyl = -outer_cyl & +h0 & -hT
 
-    x1 = openmc.XPlane(x0 =-140 * cm)
-    x2 = openmc.XPlane(x0 = 140 * cm)
-    y1 = openmc.YPlane(y0 =-140 * cm)
-    y2 = openmc.YPlane(y0 = 140 * cm)
+    x1 = openmc.XPlane(x0 =-140/2 * cm)
+    x2 = openmc.XPlane(x0 = 140/2 * cm)
+    y1 = openmc.YPlane(y0 =-140/2 * cm)
+    y2 = openmc.YPlane(y0 = 140/2 * cm)
     z0 = openmc.ZPlane(z0 =-10 * cm)
     zT = openmc.ZPlane(z0 = 240 * cm)
 
@@ -48,9 +56,12 @@ def Space_Outside_Cask(void_fill):
     return cell
 
 
-def Overpack_Shells():
+def Overpack_Shell():
 
-    #carbon steel outer and inner cylindrical shells
+    """
+    These shells hug the outer wall of the cask as well as the space 
+    beteween the radial sheileds and the air annulus/MPC
+    """
 
     outer_cyl_outer = openmc.ZCylinder(r=132.5/2 * cm)
     outer_cyl_inner = openmc.ZCylinder(r=131/2 * cm)
@@ -66,12 +77,17 @@ def Overpack_Shells():
 
     Overpack_Region = outer_shell_region | inner_shell_region
 
-    Overpack = openmc.cell.Cell(name='Overpack Shells', fill=A516_70, region=Overpack_Region)
+    Overpack = openmc.Cell(name='Overpack Shells', fill=A516_70, region=Overpack_Region)
 
     return Overpack
 
 
 def Radial_Shield_Concrete():
+
+    """
+    Primary neutron shield, thick concrete
+    """
+
     #portland concrete ii
 
     concrete_outer = openmc.ZCylinder(r=131/2 * cm)
@@ -91,7 +107,9 @@ def Radial_Shield_Concrete():
 
 def Radial_Shield_Steel():
 
-    #gamma sheild 
+    """
+    Gamma sheild, high Z metal
+    """
     
     steel_outer = openmc.ZCylinder(r=(131/2 - 26.75) * cm)
     steel_inner = openmc.ZCylinder(r=75/2 * cm) #3.75 in thick
@@ -109,6 +127,10 @@ def Radial_Shield_Steel():
     return Steel_Shield
     
 def Plates():
+
+    """
+    These plates sit at the top and base of the Cask
+    """
 
     # carbon steel top and naseplate
 
@@ -134,6 +156,19 @@ def Plates():
 
 def MPC_Concrete():
 
+    """
+    This is the concrete of the same radial thickness as the MPC.
+    
+    [Plate]
+    [MPC Concrete]
+    [MPC Steel]
+    [Air Annulus]
+    [MPC]
+    [MPC Steel]
+    [MPC Concrete]
+    [Plate] 
+    """
+
     #portland concrete ii
 
     rad = openmc.ZCylinder(r=69.5/2 * cm)
@@ -157,6 +192,19 @@ def MPC_Concrete():
     return MPC_Outer_Concrete
 
 def MPC_Steel():
+    
+    """
+    This is the steel of the same radial thickness as the MPC.
+    
+    [Plate]
+    [MPC Concrete]
+    [MPC Steel]
+    [Air Annulus]
+    [MPC]
+    [MPC Steel]
+    [MPC Concrete]
+    [Plate] 
+    """
 
     rad = openmc.ZCylinder(r=69.5/2 * cm)
 
@@ -180,6 +228,12 @@ def MPC_Steel():
 
 def MPC():
 
+    """
+    Defines the MPC shell. The void inside the MPC is defined and filled
+    in another cell
+    """
+
+
     mpc_outer = openmc.ZCylinder(r= 69.5/2 * cm)
     mpc_inner = openmc.ZCylinder(r= 68.5/2 * cm)
 
@@ -202,11 +256,17 @@ def MPC():
 
     return MPC
 
-def MPC_Inside(mpc_void_fill=He):
+def MPC_Inside(mpc_void_fill=He, blanket_material=S_316_borated):
 
-    BCC = Blanket_and_Pebble_Universe(void_fill=mpc_void_fill)
+    """
+    Defines the void space inside the MPC, should be filled
+    with the BCC universe defined in fuel_blanket_and_pebbles.py
+    """
 
-    ### represents the cylindrical shape inside the MPC to be filled
+    BCC = Blanket_and_Pebble_Universe(void_fill=mpc_void_fill,
+                                      blanket=blanket_material)
+
+    ### represents the cylindrical shape inside the MPC to be filled with the BCC
 
     void_top = openmc.ZPlane(z0= (231.75-4-10.75 - 3.75 - 1 -1) * cm) #same as mpc_top_bot
     void_base = openmc.ZPlane(z0 = (231.75-4-10.75 - 3.75 - 1 -1 - 190.5) * cm) # Same as mpc_base_top
@@ -253,7 +313,7 @@ def air_annulus(void_fill = air):
     return cell
 
 
-def Cask_and_MPC_Universe(mpc_cool_fill, annulus_fill, outside_fill):
+def Cask_and_MPC_Universe(mpc_cool_fill, annulus_fill, outside_fill, blanket_material):
 
     """
     Universe for the project import file
@@ -268,10 +328,10 @@ def Cask_and_MPC_Universe(mpc_cool_fill, annulus_fill, outside_fill):
 
     universe.add_cells([MPC(), MPC_Concrete(), MPC_Steel(), 
                         Plates(),  Radial_Shield_Steel(), 
-                        Radial_Shield_Concrete(), Overpack_Shells(), 
+                        Radial_Shield_Concrete(), Overpack_Shell(), 
                         MPC_Inside(mpc_cool_fill), 
                         air_annulus(annulus_fill),
-                        Space_Outside_Cask(outside_fill)])
+                        Outside_Cask(outside_fill)])
     
     return universe
 
@@ -281,34 +341,35 @@ def xml():
     settings = openmc.Settings()
 
 
-    geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shells(), MPC_Inside(), air_annulus(air), Space_Outside_Cask(air)])
+    geometry = openmc.Geometry([MPC(), MPC_Concrete(), MPC_Steel(), Plates(),  Radial_Shield_Steel(), Radial_Shield_Concrete(), Overpack_Shell(), MPC_Inside(), air_annulus(air), Outside_Cask(air)])
     geometry.root_universe.bounding_region = Boundary_Region()
 
     geometry.export_to_xml()
     settings.export_to_xml()
-
-# Plotting hehe
 
 def plotter():
 
     plot1 = openmc.Plot()
     plot1.basis = 'xz'
     plot1.origin = (0, 2, 240 / 2 * cm)
-    plot1.width = (400, 700)
-    plot1.pixels = (1600, 1400*2)
+    plot1.width = ((cm * 2 * 70), (cm * 240))
+    plot1.pixels = (700*5, 1200*5)
     plot1.color_by = 'material'
     plot1.type = 'slice'
-    plot1.filename = 'cask_xsection_yz_filled_stag.png'
+    plot1.filename = 'xz-slice-normal-cond.png'
 
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
-    plot2.origin = (0, 0, 248.9 / 2 * cm)
-    plot2.width = (400, 400)
-    plot2.pixels = (1200*2, 1200*2)
+    plot2.origin = (0, 0, 240 / 2 * cm)
+    plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
+    plot2.pixels = (700*5, 1000*5)
     plot2.color_by = 'material'
     plot2.type = 'slice'
-    plot2.filename = 'cask_xsection_xy_filled_stag.png'
+    plot2.filename = 'xy-slice-normal-cond.png'
 
     plots = openmc.Plots([plot1,plot2])
     plots.export_to_xml()
     openmc.plot_geometry()
+
+xml()
+plotter()

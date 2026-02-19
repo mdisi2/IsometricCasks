@@ -3,6 +3,13 @@ import numpy as np
 import openmc
 from .material_init import SiC, PyC, buffer, depleted_fuel, graphite
 
+
+### This is appropriated from the OpenMC triso particle example page
+# https://docs.openmc.org/en/v0.12.2/examples/triso.html 
+
+# Pebble fuel region compositions are from Zoe Richter's 4th iteration
+# depletion modeling for depleted pebbles in the Xe-100. 
+
 spheres = [openmc.Sphere(r=r*1e-4) for r in [215.,315.,350.,385.]]
 
 cells = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]),
@@ -55,7 +62,5 @@ geom.export_to_xml()
 
 def Depleted_Triso_Universe():
     return root_univ
-
-
 
 ### This file does everything it should, please do not touch!!! 

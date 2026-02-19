@@ -14,10 +14,10 @@ cm = 2.54 # 1 inch = 2.54 cm
 
 def Boundary_Region():
 
-    x1 = openmc.XPlane(x0 = -140 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 =  140 * cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -140 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 =  140 * cm, boundary_type='vacuum')
+    x1 = openmc.XPlane(x0 = -140/2 * cm, boundary_type='vacuum')
+    x2 = openmc.XPlane(x0 =  140/2* cm, boundary_type='vacuum')
+    y1 = openmc.YPlane(y0 = -140/2 * cm, boundary_type='vacuum')
+    y2 = openmc.YPlane(y0 =  140/2 * cm, boundary_type='vacuum')
     z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
     zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
 
@@ -59,9 +59,9 @@ source.angle = openmc.stats.Isotropic()
 settings.source = source
 
 mesh = openmc.RegularMesh()
-mesh.dimension = (30, 30, 50)
-mesh.lower_left = (-140*cm, -140*cm, 0)
-mesh.upper_right = (140*cm, 140*cm, 240*cm)
+mesh.dimension = (7, 7, 25)
+mesh.lower_left = (-140/2*cm, -140/2*cm, -10*cm)
+mesh.upper_right = (140/2*cm, 140/2*cm, 240*cm)
 
 settings.entropy_mesh = mesh
 settings.export_to_xml()

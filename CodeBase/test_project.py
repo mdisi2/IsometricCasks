@@ -49,9 +49,9 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = 100000
-settings.batches   = 2000
-settings.inactive  = 300
+settings.particles = 1000
+settings.batches   = 20
+settings.inactive  = 30
 
 source = openmc.Source()
 source.space = openmc.CylindricalIndependent(r=(0,86.995), origin=(0,0,0))

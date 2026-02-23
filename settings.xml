@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <settings>
   <run_mode>eigenvalue</run_mode>
-  <particles>1000</particles>
-  <batches>20</batches>
-  <inactive>5</inactive>
+  <particles>100000</particles>
+  <batches>2000</batches>
+  <inactive>300</inactive>
   <source type="independent" strength="1.0" particle="neutron">
-    <constraints>
-      <fissionable>true</fissionable>
-    </constraints>
+    <space type="box">
+      <parameters>-173.99 -174.244 52.705 173.99 173.99 536.575</parameters>
+    </space>
   </source>
   <entropy_mesh>1</entropy_mesh>
   <mesh id="1">

@@ -333,7 +333,7 @@ def air_annulus(void_fill = air):
 def Cask_and_MPC_Universe(mpc_cool_fill, annulus_fill, outside_fill, blanket_material):
 
     """
-    Universe for the project import file
+    Returns all the cells for the entire universe for the project import file, all the MPC cells, all the cask cells, all the void cells, every cell. 
 
     :input mpc_void_fill: material that fills the void space between pebbles and blanket
     :input annulus_fill: material that fills the cask annulus 

@@ -205,21 +205,20 @@ UNIT_Z = 11.006257
 HALF_XY = UNIT_XY / 2 + 1e-6
 HALF_Z = UNIT_Z / 2
 
-bc = 'reflective'
+bc = 'periodic'
 
 # Periodic_BC:
 z_top_bc = openmc.ZPlane(z0=HALF_Z, boundary_type=bc)
 z_bottom_bc = openmc.ZPlane(z0=-HALF_Z, boundary_type=bc)
-# z_top_bc.periodic_surface = z_bottom_bc
-# z_bottom_bc.periodic_surface = z_bottom_bc
+z_top_bc.periodic_surface = z_bottom_bc
 
 x_1_bc = openmc.XPlane(x0=-HALF_XY, boundary_type=bc)
 x_2_bc = openmc.XPlane(x0=HALF_XY, boundary_type=bc)
-# x_1_bc.periodic_surface = x_2_bc
+x_1_bc.periodic_surface = x_2_bc
 
 y_1_bc = openmc.YPlane(y0=-HALF_XY, boundary_type=bc)
 y_2_bc = openmc.YPlane(y0=HALF_XY, boundary_type=bc)
-# y_1_bc.periodic_surface = y_2_bc
+y_1_bc.periodic_surface = y_2_bc
 
 Periodic_BC = +z_bottom_bc & -z_top_bc & +x_1_bc & -x_2_bc & +y_1_bc & -y_2_bc
 
@@ -384,9 +383,9 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = 50000
-settings.batches   = 1000
-settings.inactive  = 300
+settings.particles = 2000
+settings.batches   = 7000
+settings.inactive  = 200
 settings.temperature = {'method': 'interpolation'}
 
 #box around BCC

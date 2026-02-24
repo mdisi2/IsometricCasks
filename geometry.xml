@@ -44296,12 +44296,12 @@
   <surface id="41453" type="sphere" coeffs="0.48024531636165957 0.031663857247813176 -0.7275326242548844 0.0425"/>
   <surface id="41454" type="sphere" coeffs="-0.3446749711418101 -0.2819590840928608 -0.44003636948361086 0.0425"/>
   <surface id="41455" type="sphere" coeffs="0.0 0.0 0.0 3.0"/>
-  <surface id="41456" type="z-plane" boundary="reflective" coeffs="5.5031285"/>
-  <surface id="41457" type="z-plane" boundary="reflective" coeffs="-5.5031285"/>
-  <surface id="41458" type="x-plane" boundary="reflective" coeffs="-3.125001"/>
-  <surface id="41459" type="x-plane" boundary="reflective" coeffs="3.125001"/>
-  <surface id="41460" type="y-plane" boundary="reflective" coeffs="-3.125001"/>
-  <surface id="41461" type="y-plane" boundary="reflective" coeffs="3.125001"/>
+  <surface id="41456" type="z-plane" boundary="periodic" coeffs="5.5031285" periodic_surface_id="41457"/>
+  <surface id="41457" type="z-plane" boundary="periodic" coeffs="-5.5031285" periodic_surface_id="41456"/>
+  <surface id="41458" type="x-plane" boundary="periodic" coeffs="-3.125001" periodic_surface_id="41459"/>
+  <surface id="41459" type="x-plane" boundary="periodic" coeffs="3.125001" periodic_surface_id="41458"/>
+  <surface id="41460" type="y-plane" boundary="periodic" coeffs="-3.125001" periodic_surface_id="41461"/>
+  <surface id="41461" type="y-plane" boundary="periodic" coeffs="3.125001" periodic_surface_id="41460"/>
   <surface id="41462" type="x-plane" coeffs="-3.125"/>
   <surface id="41463" type="plane" coeffs="-0.5001106605811025 0.0 -0.8659615044406611 3.125040368326898"/>
   <surface id="41464" type="plane" coeffs="0.5001106605811025 0.0 -0.8659615044406611 3.1250403683268977"/>

@@ -1,6 +1,6 @@
 import openmc
 import cask_and_mpc as cam
-from Function_Folder.material_init import air, He, S_316
+from Function_Folder.material_init import air, He, S_316, fresh_fuel
 
 ### Meant to model the Cask under normal conditions
 ### MPC coolant is Hellium
@@ -15,29 +15,21 @@ cm = 2.54 # 1 inch = 2.54 cm
 path = '/home/matthewdisimone/Downloads/endfb80/endfb-viii.0-hdf5/cross_sections.xml'
 openmc.config['cross_sections'] = path
 
-
-### uco
-fresh_fuel =openmc.materials(name='Fresh Fuel')
-fresh_fuel.set_density('g/cm3',10.4)
-fresh_fuel.add_nuclide("U235", 0.1386, percent_type='wo')
-fresh_fuel.add_nuclide("U238", 0.7559, percent_type='wo')
-fresh_fuel.add_nuclide("O", 0.06025, percent_type='wo')
-fresh_fuel.add_nuclide("C", 0.04523, percent_type='wo')
-
 #### Defining boundary region inside 
 def Boundary_Region():
 
-    cyl = openmc.ZCylinder(r=70*cm, boundary_type='vacuum')
+    """
+    Boundary region of a rectangle slightly larger than the cask
+    """
 
-    p1 = openmc.XPlane(x0 = 0, boundary_type='periodic')
-    p2 = openmc.Plane(a=1,b=-1,c=0,d=0, boundary_type='periodic')
+    absolute_edge = openmc.ZCylinder(r=150/2 * cm,boundary_type ='vacuum')
+    z0 = openmc.ZPlane(z0 =-10 * cm, boundary_type = 'vacuum')
+    zT = openmc.ZPlane(z0 = 240 * cm, boundary_type = 'vacuum')
 
-    p1.periodic_surface = p2
+    x_axis = openmc.XPlane(x0=0,boundary_type='reflective')
+    s1 = openmc.Plane(a=1,b=-2,c=0,d=0,boundary_type='reflective')
 
-    z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
-
-    Region_rec = (-zT & +z0) & (+p1 & -p2) & -cyl
+    Region_rec = (-absolute_edge & +z0 & -zT) & (-s1 & +x_axis) 
 
     return Region_rec
 
@@ -57,7 +49,7 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = int(100000 / 2)
+settings.particles = 50000
 settings.batches   = 300
 settings.inactive  = 50
 settings.temperature = {'method': 'interpolation'}
@@ -70,7 +62,7 @@ source = openmc.IndependentSource(space = box_slice)
 settings.source = source
 
 mesh = openmc.RegularMesh()
-mesh.dimension = (7, 7, 25)
+mesh.dimension = (14, 14,  50)
 mesh.lower_left = (0, 0, -10*cm)
 mesh.upper_right = (140/2*cm, 140/2*cm, 240*cm)
 
@@ -89,9 +81,9 @@ def plots():
 
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
-    plot2.origin = (0, 0, 240 / 2 * cm)
-    plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
-    plot2.pixels = (1000*5, 1000*5)
+    plot2.origin = (35*cm, 35*cm, 120 * cm)
+    plot2.width = ((cm * 90 * 2), (cm * 75 * 2))
+    plot2.pixels = (1000*3, 1000*3)
     plot2.color_by = 'material'
     plot2.type = 'slice'
     plot2.filename = 'xy-slice-eight.png'
@@ -100,9 +92,9 @@ def plots():
     plots.export_to_xml()
     openmc.plot_geometry()
 
-# openmc.run()
-# sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
-# print("k-effective =", sp.k_combined)
+openmc.run()
+sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
+print("k-effective =", sp.k_combined)
 
 
 ### At 100,000 particle batches, shannon entorpy might converge at like 50 batches the way its looking

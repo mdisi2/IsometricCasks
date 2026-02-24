@@ -6,13 +6,13 @@
   <inactive>50</inactive>
   <source type="independent" strength="1.0" particle="neutron">
     <space type="box">
-      <parameters>-173.99 -174.244 52.705 173.99 173.99 536.575</parameters>
+      <parameters>0.0 0.0 52.705 173.99 173.99 536.575</parameters>
     </space>
   </source>
   <entropy_mesh>1</entropy_mesh>
   <mesh id="1">
-    <dimension>7 7 25</dimension>
-    <lower_left>-177.8 -177.8 -25.4</lower_left>
+    <dimension>14 14 50</dimension>
+    <lower_left>0 0 -25.4</lower_left>
     <upper_right>177.8 177.8 609.6</upper_right>
   </mesh>
   <temperature_method>interpolation</temperature_method>

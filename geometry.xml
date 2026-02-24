@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <geometry>
-  <cell id="1" material="1000" region="-1" universe="1"/>
+  <cell id="1" material="7" region="-1" universe="1"/>
   <cell id="2" material="1002" region="1 -2" universe="1"/>
   <cell id="3" material="1003" region="2 -3" universe="1"/>
   <cell id="4" material="1004" region="3 -4" universe="1"/>
@@ -21932,8 +21932,8 @@
   <cell id="41073" name="Pebble Lattice Cell" fill="35" region="41215 -41216 41217 -41218 41219 -41220" universe="36"/>
   <cell id="41074" name="Inside_MPC" fill="36" region="-41223 -41221 41222" universe="33"/>
   <cell id="41075" name="Annulus" material="5" region="(-41224 41225 41227 -41226) | (-41230 41229 -41228)" universe="33"/>
-  <cell id="41076" name="Outside Cask Space" material="5" region="41234 -41235 41236 -41237 41238 -41239 (41231 | -41232 | 41233)" universe="33"/>
-  <cell id="41077" fill="33" region="41240 -41241 41242 -41243 41244 -41245" universe="37"/>
+  <cell id="41076" name="Outside Cask Space" material="5" region="-41234 41235 -41236 (41231 | 41233 | -41232)" universe="33"/>
+  <cell id="41077" fill="33" region="-41237 41238 -41239 -41241 41240" universe="37"/>
   <lattice id="2">
     <pitch>1.6666666666666667 1.6666666666666667 1.6666666666666667</pitch>
     <outer>30</outer>
@@ -47665,16 +47665,12 @@
   <surface id="41231" type="z-cylinder" coeffs="0.0 0.0 168.275"/>
   <surface id="41232" type="z-plane" coeffs="0.0"/>
   <surface id="41233" type="z-plane" coeffs="588.645"/>
-  <surface id="41234" type="x-plane" coeffs="-177.8"/>
-  <surface id="41235" type="x-plane" coeffs="177.8"/>
-  <surface id="41236" type="y-plane" coeffs="-177.8"/>
-  <surface id="41237" type="y-plane" coeffs="177.8"/>
-  <surface id="41238" type="z-plane" coeffs="-25.4"/>
-  <surface id="41239" type="z-plane" coeffs="609.6"/>
-  <surface id="41240" type="x-plane" boundary="vacuum" coeffs="-177.8"/>
-  <surface id="41241" type="x-plane" boundary="vacuum" coeffs="177.8"/>
-  <surface id="41242" type="y-plane" boundary="vacuum" coeffs="-177.8"/>
-  <surface id="41243" type="y-plane" boundary="vacuum" coeffs="177.8"/>
-  <surface id="41244" type="z-plane" boundary="vacuum" coeffs="-25.4"/>
-  <surface id="41245" type="z-plane" boundary="vacuum" coeffs="609.6"/>
+  <surface id="41234" type="z-cylinder" boundary="vacuum" coeffs="0.0 0.0 190.5"/>
+  <surface id="41235" type="z-plane" boundary="vacuum" coeffs="-25.4"/>
+  <surface id="41236" type="z-plane" boundary="vacuum" coeffs="609.6"/>
+  <surface id="41237" type="z-cylinder" boundary="vacuum" coeffs="0.0 0.0 190.5"/>
+  <surface id="41238" type="z-plane" boundary="vacuum" coeffs="-25.4"/>
+  <surface id="41239" type="z-plane" boundary="vacuum" coeffs="609.6"/>
+  <surface id="41240" type="x-plane" boundary="reflective" coeffs="0"/>
+  <surface id="41241" type="plane" boundary="reflective" coeffs="1 -2 0 0"/>
 </geometry>

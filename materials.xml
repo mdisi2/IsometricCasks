@@ -143,23 +143,33 @@
     <nuclide name="S36" wo="4.9064559282261095e-08"/>
     <nuclide name="N14" wo="0.0009960772133092955"/>
     <nuclide name="N15" wo="3.922786690704343e-06"/>
-    <nuclide name="B10" wo="0.001835549587507326"/>
-    <nuclide name="B11" wo="0.008164450412492674"/>
-    <nuclide name="Fe54" wo="0.03696993802139584"/>
-    <nuclide name="Fe56" wo="0.6018171612129647"/>
-    <nuclide name="Fe57" wo="0.014147173866648356"/>
-    <nuclide name="Fe58" wo="0.0019157268989911012"/>
+    <nuclide name="B10" wo="0.18355495875073258"/>
+    <nuclide name="B11" wo="0.8164450412492673"/>
+    <nuclide name="Fe54" wo="0.03641102775734786"/>
+    <nuclide name="Fe56" wo="0.592718909863788"/>
+    <nuclide name="Fe57" wo="0.013933297373894565"/>
+    <nuclide name="Fe58" wo="0.0018867650049695511"/>
   </material>
   <material id="5" name="Air">
     <density value="0.0012" units="g/cm3"/>
-    <nuclide name="N14" wo="0.7779363035945598"/>
-    <nuclide name="N15" wo="0.0030636964054400915"/>
-    <nuclide name="O16" wo="0.20894416985357608"/>
-    <nuclide name="O17" wo="8.436238964068224e-05"/>
-    <nuclide name="O18" wo="0.0004714677567832072"/>
-    <nuclide name="Ar36" wo="2.8534324306564986e-05"/>
-    <nuclide name="Ar38" wo="5.678568377775435e-06"/>
-    <nuclide name="Ar40" wo="0.00946578710731566"/>
+    <nuclide name="N14" ao="0.7781391969999999"/>
+    <nuclide name="N15" ao="0.002860803"/>
+    <nuclide name="O16" ao="0.20900151569999997"/>
+    <nuclide name="O17" ao="7.94005e-05"/>
+    <nuclide name="O18" ao="0.00041908379999999995"/>
+    <nuclide name="Ar36" ao="3.1692e-05"/>
+    <nuclide name="Ar38" ao="5.9755e-06"/>
+    <nuclide name="Ar40" ao="0.0094623325"/>
+  </material>
+  <material id="7" name="Fresh Fuel" depletable="true">
+    <density value="10.4" units="g/cm3"/>
+    <nuclide name="U235" wo="0.1386"/>
+    <nuclide name="U238" wo="0.7559"/>
+    <nuclide name="O16" wo="0.0600901490867683"/>
+    <nuclide name="O17" wo="2.4261737354897877e-05"/>
+    <nuclide name="O18" wo="0.0001355891758767935"/>
+    <nuclide name="C12" wo="0.0446875496032256"/>
+    <nuclide name="C13" wo="0.0005424503967743985"/>
   </material>
   <material id="1000" name="depleted kernel" temperature="1159.15">
     <density value="10.400000000000002" units="g/cm3"/>

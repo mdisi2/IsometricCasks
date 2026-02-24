@@ -1,6 +1,6 @@
 import openmc
 import cask_and_mpc as cam
-from Function_Folder.material_init import air, He, S_316_borated, S_316
+from Function_Folder.material_init import air, He, S_316_borated
 
 ### Meant to model the Cask under normal conditions
 ### MPC coolant is Hellium

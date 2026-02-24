@@ -13,20 +13,11 @@ def Boundary_Region():
     Boundary region of a rectangle slightly larger than the cask
     """
 
-    outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
-    h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
-    hT = openmc.ZPlane(z0 = 231.75 *cm)
+    absolute_edge = openmc.ZCylinder(r=150/2 * cm,boundary_type ='vacuum')
+    z0 = openmc.ZPlane(z0 =-10 * cm, boundary_type = 'vacuum')
+    zT = openmc.ZPlane(z0 = 240 * cm, boundary_type = 'vacuum')
 
-    Region_cyl = -outer_cyl & +h0 & -hT
-
-    x1 = openmc.XPlane(x0 = -240/2 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 = 240/2 * cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -240/2 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 = 240/2 * cm, boundary_type='vacuum')
-    z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
-
-    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+    Region_rec = (-absolute_edge & +z0 & -zT) 
 
     return Region_rec
 
@@ -36,22 +27,20 @@ def Outside_Cask(void_fill):
     Space outside cask, fill with air or water
     """
 
-    outer_cyl = openmc.ZCylinder(r=132.5/2 * cm)
+    outer_overpack = openmc.ZCylinder(r=132.5/2 * cm)
+    
     h0 = openmc.ZPlane(z0 = 0 * cm)
     hT = openmc.ZPlane(z0 = 231.75 * cm)
 
-    Region_cyl = -outer_cyl & +h0 & -hT
+    Region_cask = -outer_overpack & -hT & +h0
 
-    x1 = openmc.XPlane(x0 =-140/2 * cm)
-    x2 = openmc.XPlane(x0 = 140/2 * cm)
-    y1 = openmc.YPlane(y0 =-140/2 * cm)
-    y2 = openmc.YPlane(y0 = 140/2 * cm)
-    z0 = openmc.ZPlane(z0 =-10 * cm)
-    zT = openmc.ZPlane(z0 = 240 * cm)
+    absolute_edge = openmc.ZCylinder(r=150/2 * cm, boundary_type = 'vacuum')
+    z0 = openmc.ZPlane(z0 =-10 * cm, boundary_type = 'vacuum')
+    zT = openmc.ZPlane(z0 = 240 * cm, boundary_type = 'vacuum')
 
-    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+    tot = (-absolute_edge & +z0 & -zT) & ~(Region_cask)
 
-    cell = openmc.Cell(name='Outside Cask Space', fill=void_fill, region=Region_rec & ~Region_cyl)
+    cell = openmc.Cell(name='Outside Cask Space', fill=void_fill, region=tot)
 
     return cell
 
@@ -373,20 +362,20 @@ def plotter():
     plot1.pixels = (700*5, 1200*5)
     plot1.color_by = 'material'
     plot1.type = 'slice'
-    plot1.filename = 'xz-slice-normal-cond.png'
+    plot1.filename = 'xz.png'
 
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
     plot2.origin = (0, 0, 240 / 2 * cm)
-    plot2.width = ((cm * 70 * 2), (cm * 70 * 2))
+    plot2.width = ((cm * 75 * 2), (cm * 75 * 2))
     plot2.pixels = (1000*5, 1000*5)
     plot2.color_by = 'material'
     plot2.type = 'slice'
-    plot2.filename = 'xy-slice-normal-cond.png'
+    plot2.filename = 'xy-slice.png'
 
     plots = openmc.Plots([plot1,plot2])
     plots.export_to_xml()
     openmc.plot_geometry()
 
-#xml()
-#plotter()
+# xml()
+# plotter()

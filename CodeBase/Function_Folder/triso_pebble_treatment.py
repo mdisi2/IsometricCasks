@@ -1,7 +1,7 @@
 from math import pi
 import numpy as np
 import openmc
-from .material_init import SiC, PyC, buffer, depleted_fuel, graphite
+from .material_init import SiC, PyC, buffer, depleted_fuel, graphite, fresh_fuel
 
 
 ### This is appropriated from the OpenMC triso particle example page
@@ -12,7 +12,9 @@ from .material_init import SiC, PyC, buffer, depleted_fuel, graphite
 
 spheres = [openmc.Sphere(r=r*1e-4) for r in [215.,315.,350.,385.]]
 
-cells = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]),
+### MADE FRESH FUEL TO SEE WHY KEFF IS SO LOW
+
+cells = [openmc.Cell(fill=fresh_fuel, region=-spheres[0]),
          openmc.Cell(fill=buffer, region=+spheres[0] & -spheres[1]),
          openmc.Cell(fill=PyC, region=+spheres[1] & -spheres[2]),
          openmc.Cell(fill=SiC, region=+spheres[2] & -spheres[3]),

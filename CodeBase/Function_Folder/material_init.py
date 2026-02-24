@@ -160,12 +160,12 @@ water.add_element('O', 1, percent_type = 'ao')
 #                    graphite.id : "#2B2828"}
 
 ### uco
-fresh_fuel =openmc.materials(name='Fresh Fuel')
+fresh_fuel =openmc.Material(name='Fresh Fuel')
 fresh_fuel.set_density('g/cm3',10.4)
 fresh_fuel.add_nuclide("U235", 0.1386, percent_type='wo')
 fresh_fuel.add_nuclide("U238", 0.7559, percent_type='wo')
-fresh_fuel.add_nuclide("O", 0.06025, percent_type='wo')
-fresh_fuel.add_nuclide("C", 0.04523, percent_type='wo')
+fresh_fuel.add_element("O", 0.06025, percent_type='wo')
+fresh_fuel.add_element("C", 0.04523, percent_type='wo')
 
 
 depleted_fuel = None

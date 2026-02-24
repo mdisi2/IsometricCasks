@@ -34,7 +34,7 @@ S_316.add_element('Mo', 2.5 / 100, percent_type='wo')
 S_316.add_element('P', 0.045 / 100, percent_type='wo')
 S_316.add_element('S', 0.030 / 100, percent_type='wo')
 S_316.add_element('N', 0.1 / 100, percent_type='wo')
-S_316.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1) / 100 , percent_type='wo')
+S_316.add_element('Fe', 1 - ((0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1) / 100) , percent_type='wo')
 
 
 ###Overpack
@@ -124,7 +124,7 @@ S_316_borated.add_element('N', 0.1 / 100, percent_type='wo')
 
 
 S_316_borated.add_element('B', B_wo, percent_type='wo')
-S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + B_wo) / 100 , percent_type='wo')
+S_316_borated.add_element('Fe', 1 - ((0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0.030 + 0.1 + B_wo)/100) , percent_type='wo')
 
 
 #Ambient air

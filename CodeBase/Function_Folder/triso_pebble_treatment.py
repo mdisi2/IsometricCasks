@@ -1,5 +1,5 @@
-from math import pi
 import numpy as np
+from math import pi
 import openmc
 from .material_init import SiC, PyC, buffer, depleted_fuel, graphite, fresh_fuel
 
@@ -14,7 +14,7 @@ spheres = [openmc.Sphere(r=r*1e-4) for r in [215.,315.,350.,385.]]
 
 ### MADE FRESH FUEL TO SEE WHY KEFF IS SO LOW
 
-cells = [openmc.Cell(fill=fresh_fuel, region=-spheres[0]),
+cells = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]),
          openmc.Cell(fill=buffer, region=+spheres[0] & -spheres[1]),
          openmc.Cell(fill=PyC, region=+spheres[1] & -spheres[2]),
          openmc.Cell(fill=SiC, region=+spheres[2] & -spheres[3]),
@@ -60,7 +60,6 @@ graphite_zone = openmc.Cell(fill=graphite,
 root_univ = openmc.Universe(cells=[fuel_zone_cell,graphite_zone])
 geom = openmc.Geometry(root_univ)
 geom.export_to_xml()
-
 
 def Depleted_Triso_Universe():
     return root_univ

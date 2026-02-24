@@ -377,5 +377,5 @@ def plotter():
     plots.export_to_xml()
     openmc.plot_geometry()
 
-# xml()
+xml()
 # plotter()

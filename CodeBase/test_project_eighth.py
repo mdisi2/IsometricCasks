@@ -19,7 +19,7 @@ openmc.config['cross_sections'] = path
 def Boundary_Region():
 
     """
-    Boundary region of a rectangle slightly larger than the cask
+    Boundary region of a cylander slightly larger than the cask
     """
 
     absolute_edge = openmc.ZCylinder(r=150/2 * cm,boundary_type ='vacuum')

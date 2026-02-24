@@ -18,14 +18,15 @@ openmc.config['cross_sections'] = path
 #### Defining boundary region inside 
 def Boundary_Region():
 
-    x1 = openmc.XPlane(x0 = -140/2 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 =  140/2* cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -140/2 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 =  140/2 * cm, boundary_type='vacuum')
-    z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
+    """
+    Boundary region of a cylander slightly larger than the cask
+    """
 
-    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+    absolute_edge = openmc.ZCylinder(r=150/2 * cm,boundary_type ='vacuum')
+    z0 = openmc.ZPlane(z0 =-10 * cm, boundary_type = 'vacuum')
+    zT = openmc.ZPlane(z0 = 240 * cm, boundary_type = 'vacuum')
+
+    Region_rec = (-absolute_edge & +z0 & -zT)
 
     return Region_rec
 
@@ -74,7 +75,7 @@ source = openmc.IndependentSource(space = box)
 settings.source = source
 
 mesh = openmc.RegularMesh()
-mesh.dimension = (7, 7, 25)
+mesh.dimension = (14, 14, 50)
 mesh.lower_left = (-140/2*cm, -140/2*cm, -10*cm)
 mesh.upper_right = (140/2*cm, 140/2*cm, 240*cm)
 
@@ -104,6 +105,7 @@ def plots():
     plots.export_to_xml()
     openmc.plot_geometry()
 
+plots()
 openmc.run()
 sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
 print("k-effective =", sp.k_combined)

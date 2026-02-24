@@ -61,7 +61,7 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = 100000 / 2
+settings.particles = 100000
 settings.batches   = 1000
 settings.inactive  = 50
 settings.temperature = {'method': 'interpolation'}

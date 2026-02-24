@@ -1,6 +1,6 @@
 import openmc
-import cask_and_mpc as cam
-from Function_Folder.material_init import air, He, S_316_borated
+import CodeBase.junk.cask_and_mpc as cam
+from CodeBase.junk.material_init import air, He, S_316_borated
 
 ### Meant to model the Cask under normal conditions
 ### MPC coolant is Hellium
@@ -16,16 +16,30 @@ openmc.config['cross_sections'] = path
 
 
 #### Defining boundary region inside 
+# def Boundary_Region():
+
+#     x1 = openmc.XPlane(x0 = -140/2 * cm, boundary_type='vacuum')
+#     x2 = openmc.XPlane(x0 =  140/2* cm, boundary_type='vacuum')
+#     y1 = openmc.YPlane(y0 = -140/2 * cm, boundary_type='vacuum')
+#     y2 = openmc.YPlane(y0 =  140/2 * cm, boundary_type='vacuum')
+#     z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
+#     zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
+
+#     Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+
+#     return Region_rec
+
 def Boundary_Region():
 
-    x1 = openmc.XPlane(x0 = -140/2 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 =  140/2* cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -140/2 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 =  140/2 * cm, boundary_type='vacuum')
-    z0 = openmc.ZPlane(z0 = -10  * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0 =  240 * cm, boundary_type='vacuum')
+    """
+    Boundary region of a rectangle slightly larger than the cask
+    """
 
-    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
+    absolute_edge = openmc.ZCylinder(r=150/2 * cm,boundary_type ='vacuum')
+    z0 = openmc.ZPlane(z0 =-10 * cm, boundary_type = 'vacuum')
+    zT = openmc.ZPlane(z0 = 240 * cm, boundary_type = 'vacuum')
+
+    Region_rec = (-absolute_edge & +z0 & -zT) 
 
     return Region_rec
 

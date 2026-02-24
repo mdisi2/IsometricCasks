@@ -1,8 +1,8 @@
 import openmc 
 import numpy as np
 
-from Function_Folder.material_init import S_316_borated, He
-from Function_Folder.triso_pebble_treatment import Depleted_Triso_Universe
+from CodeBase.junk.material_init import S_316_borated, He
+from CodeBase.junk.triso_pebble_treatment import Depleted_Triso_Universe
 
 ### This file constructs the cell for the fuel blanket and pebbles, with reflective boundary conditions to fill the mpc universe
 ### In units [cm]

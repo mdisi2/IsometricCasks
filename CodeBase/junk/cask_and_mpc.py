@@ -1,6 +1,6 @@
 import openmc
-from Function_Folder.material_init import S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC
-from fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
+from CodeBase.junk.material_init import S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC
+from CodeBase.junk.fuel_blanket_and_pebbles import Blanket_and_Pebble_Universe
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
 #everything will be in inches multipled by the conversion factor

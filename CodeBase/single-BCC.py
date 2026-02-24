@@ -2,15 +2,14 @@ import openmc
 import os
 from math import pi
 import numpy as np
-cm = 2.54 # 1-inch = 2.54cm
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 materials_path = os.path.join(script_dir, "materials_zoey.xml")
 materials_zoey = openmc.Materials.from_xml(materials_path)
 
 #### Importing Cross Sections
-simga_path = '/home/matthewdisimone/Downloads/endfb80/endfb-viii.0-hdf5/cross_sections.xml'
-openmc.config['cross_sections'] = simga_path
+sigma_path = '/home/matthewdisimone/Downloads/endfb80/endfb-viii.0-hdf5/cross_sections.xml'
+openmc.config['cross_sections'] = sigma_path
 
 
 ##########
@@ -138,7 +137,15 @@ for m in materials_zoey:
         PyC = m
         break
 
+assert PyC is not None
+assert SiC is not None
+assert buffer is not None
+assert graphite is not None
+assert depleted_fuel is not None
+assert He is not None 
+
 materials = openmc.Materials([S_316_borated, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC,uco])
+materials.export_to_xml()
 
 ### This is appropriated from the OpenMC triso particle example page
 # https://docs.openmc.org/en/v0.12.2/examples/triso.html 
@@ -172,9 +179,9 @@ trisos = [openmc.model.TRISO(outer_radius = outer_radius_particle,
                              fill = triso_univ, 
                              center = c) for c in centers]
 
-lower_left = (-2.5,-2.5,-2.5)
-upper_right = (2.5,2.5,2.5)
-shape = (3,3,3)
+lower_left = (-2.5,-2.5,-2.5) 
+upper_right = (2.5,2.5,2.5) 
+shape = (3,3,3) 
 pitch = (np.array(upper_right) - np.array(lower_left))/shape
 
 lattice = openmc.model.create_triso_lattice(
@@ -191,26 +198,22 @@ outer_rad = openmc.Sphere(r=3.0)
 graphite_zone = openmc.Cell(fill=graphite,
                             region=-outer_rad & +fuel_zone)
 
-def Depleted_Triso_Universe():
-    root_univ = openmc.Universe(cells=[fuel_zone_cell,graphite_zone])
-    return root_univ
+Depleted_Triso_Universe = openmc.Universe(cells=[fuel_zone_cell,graphite_zone])
 
-def Periodic_BC():
-    z_top = openmc.ZPlane(z0= 11.006257/2)
-    z_bottom = openmc.ZPlane(z0= -11.006257/2)
-    z_top.periodic_surface = z_bottom
+# Periodic_BC:
+z_top_bc = openmc.ZPlane(z0= 11.006257/2)
+z_bottom_bc = openmc.ZPlane(z0= -11.006257/2)
+z_top_bc.periodic_surface = z_bottom_bc
 
-    x_1 = openmc.XPlane(x0 = -6.25 / 2)
-    x_2 = openmc.XPlane(x0 =  6.25 / 2)
-    x_1.periodic_surface = x_2
+x_1_bc = openmc.XPlane(x0 = -6.25 / 2)
+x_2_bc = openmc.XPlane(x0 =  6.25 / 2)
+x_1_bc.periodic_surface = x_2_bc
 
-    y_1 = openmc.YPlane(y0 =  -6.25 / 2)
-    y_2 = openmc.YPlane(y0 =  6.25 / 2)
-    y_1.periodic_surface = y_2
+y_1_bc = openmc.YPlane(y0 =  -6.25 / 2)
+y_2_bc = openmc.YPlane(y0 =  6.25 / 2)
+y_1_bc.periodic_surface = y_2_bc
 
-    Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
-
-    return Boundary_Region
+Periodic_BC = +z_bottom_bc & -z_top_bc & +x_1_bc & -x_2_bc & +y_1_bc & -y_2_bc
 
 def F_Blanket(basket=S_316):
 
@@ -250,8 +253,47 @@ def F_Blanket(basket=S_316):
 
 
     frame = openmc.Cell(name='basket',
-                        region = (frame_region_yz | frame_region_xz),
-                        fill = basket)
+                        region = (frame_region_yz | frame_region_xz) & Periodic_BC,
+                        fill = basket) 
+    
+    return frame
+
+def SBlanket_Region():
+
+    """
+    Returns region of the fuel blanket
+    """
+
+    frame_outer = np.array([(0.1,5.503),
+                (-0.1,5.503),
+                (-0.1,3.551),
+                (-3.125,1.804),
+                (-3.125,-1.804),
+                (-0.1,-3.551),
+                (-0.1,-5.503),
+                (0.1,-5.503),
+                (0.1,-3.551),
+                (3.125,-1.804),
+                (3.125,1.804),
+                (0.1,3.551)])
+    
+    frame_cut = np.array([(0,3.493),
+                 (3.025, 1.746),
+                 (3.025,-1.746),
+                 (0,-3.493),
+                 (-3.025,-1.746),
+                 (-3.025,1.764)])
+
+    frame_xz = openmc.model.Polygon(points=frame_outer,basis='xz')
+    cut_xz = openmc.model.Polygon(points=frame_cut,basis='xz')
+    frame_region_xz = ~cut_xz.region & frame_xz.region 
+
+    frame_yz = openmc.model.Polygon(points=frame_outer,basis='yz')
+    cut_yz = openmc.model.Polygon(points=frame_cut,basis='yz')
+    frame_region_yz = ~cut_yz.region & frame_yz.region
+
+
+    frame = (frame_region_yz | frame_region_xz) & Periodic_BC 
     
     return frame
 
@@ -284,7 +326,7 @@ def Triso_Pebbles():
     cells = []
 
     for sphere, center in pebbles:
-        c = openmc.Cell(fill=Depleted_Triso_Universe(), region= -sphere)
+        c = openmc.Cell(fill=Depleted_Triso_Universe, region= -sphere & Periodic_BC)
         c.translation = center
 
         cells.append(c)
@@ -313,7 +355,7 @@ def void_space(void_fill):
     
     region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4)
 
-    region = ~(region_pebbles| F_Blanket(S_316_borated).region)
+    region = ~(region_pebbles| SBlanket_Region()) & Periodic_BC
 
     voidcell = openmc.Cell(name='void',
                           region=region,
@@ -321,9 +363,13 @@ def void_space(void_fill):
 
     return voidcell
 
+Blanket = F_Blanket(S_316)
+Pebbles = Triso_Pebbles()
+Coolant = void_space(He)
 
-cells = [F_Blanket(S_316),Triso_Pebbles(),void_space(He)]
-root_universe = openmc.Universe(cells=[cells],region=Periodic_BC)
+
+cells = [Blanket,*Pebbles,Coolant]
+root_universe = openmc.Universe(cells=cells)
 
 geometry = openmc.Geometry(root_universe)
 geometry.export_to_xml()
@@ -335,19 +381,19 @@ settings.batches   = 1000
 settings.inactive  = 300
 settings.temperature = {'method': 'interpolation'}
 
-#box around mpc
-box = openmc.stats.Box(lower_left = (-6.25 / 2 * cm,-6.25 / 2 * cm, 
-                                     -11.006257/2 * cm),
-                       upper_right = (6.25 / 2 * cm,6.25 / 2 * cm, 
-                                     11.006257/2 * cm),)
+#box around BCC
+box = openmc.stats.Box(lower_left = (-6.25 / 2 ,-6.25 / 2 , 
+                                     -11.006257/2 ),
+                       upper_right = (6.25 / 2 ,6.25 / 2 , 
+                                     11.006257/2 ),)
 
 source = openmc.IndependentSource(space = box)
 settings.source = source
 
 mesh = openmc.RegularMesh()
 mesh.dimension = (3, 3, 11)
-mesh.lower_left = (-6.25 / 2 * cm,-6.25 / 2 * cm, -11.006257/2 * cm)
-mesh.upper_right = (6.25 / 2 * cm, 6.25 / 2 * cm, 11.006257/2 * cm)
+mesh.lower_left =  (-6.25 / 2, -6.25 / 2 , -11.006257/2 )
+mesh.upper_right = (6.25 / 2,  6.25 / 2 , 11.006257/2 )
 
 settings.entropy_mesh = mesh
 settings.export_to_xml()
@@ -356,7 +402,7 @@ def plots():
     plot1 = openmc.Plot()
     plot1.basis = 'xz'
     plot1.origin = (0, 0, 0)
-    plot1.width = (6.25 *cm, (11.006 * cm))
+    plot1.width = (6.25 , (11.006 ))
     plot1.pixels = (1250, 2200)
     plot1.color_by = 'material'
     plot1.type = 'slice'
@@ -365,7 +411,7 @@ def plots():
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
     plot2.origin = (0, 0, 0)
-    plot2.width = (6.25/2 * cm, 6.25/2 * cm)
+    plot2.width = (6.25/2, 6.25/2 )
     plot2.pixels = (1250, 1250)
     plot2.color_by = 'material'
     plot2.type = 'slice'
@@ -374,8 +420,6 @@ def plots():
     plots = openmc.Plots([plot1,plot2])
     plots.export_to_xml()
     openmc.plot_geometry()
-
-
 
 plots()
 # openmc.run()

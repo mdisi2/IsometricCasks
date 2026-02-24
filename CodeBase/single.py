@@ -2,6 +2,7 @@ import openmc
 import os
 from math import pi
 import numpy as np
+cm = 2.54 # 1-inch = 2.54cm
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 materials_path = os.path.join(script_dir, "materials_zoey.xml")
@@ -256,21 +257,25 @@ def Depleted_Triso_Universe():
 ### In units [cm]
 
 ### Bouding Box
-z_top = openmc.ZPlane(z0= 11.006257/2)
-z_bottom = openmc.ZPlane(z0= -11.006257/2)
-x_1 = openmc.XPlane(x0 = -6.25 / 2)
-x_2 = openmc.XPlane(x0 =  6.25 / 2)
-y_1 = openmc.YPlane(y0 =  -6.25 / 2)
-y_2 = openmc.YPlane(y0 =  6.25 / 2)
 
-Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
+def Triso_BCC_Region():
+    z_top = openmc.ZPlane(z0= 11.006257/2)
+    z_bottom = openmc.ZPlane(z0= -11.006257/2)
+    x_1 = openmc.XPlane(x0 = -6.25 / 2)
+    x_2 = openmc.XPlane(x0 =  6.25 / 2)
+    y_1 = openmc.YPlane(y0 =  -6.25 / 2)
+    y_2 = openmc.YPlane(y0 =  6.25 / 2)
 
-def F_Blanket(blanket):
+    Boundary_Region = +z_bottom & -z_top & +x_1 & -x_2 & +y_1 & -y_2
+
+    return Boundary_Region
+
+def F_Blanket(basket=S_316): #defaults to stainless steel
 
     """
     2D Polygonal surface of the frame that the pebble will sit in, along 
     with polygonal cuts. It is extended across the third axis to make the 
-    Isometric, corrugated, 'blanket' for each of the pebbles to lay on.
+    Isometric, corrugated, 'basket' for each of the pebbles to lay on.
     """
 
     frame_outer = np.array([(0.1,5.503),
@@ -302,9 +307,9 @@ def F_Blanket(blanket):
     frame_region_yz = ~cut_yz.region & frame_yz.region
 
 
-    frame = openmc.Cell(name='blanket',
-                        region = (frame_region_yz | frame_region_xz) & Boundary_Region,
-                        fill = blanket)
+    frame = openmc.Cell(name='basket',
+                        region = (frame_region_yz | frame_region_xz) & Triso_BCC_Region(),
+                        fill = basket)
     
     return frame
 
@@ -337,7 +342,7 @@ def Triso_Pebbles():
     cells = []
 
     for sphere, center in pebbles:
-        c = openmc.Cell(fill=Depleted_Triso_Universe(), region= -sphere & Boundary_Region)
+        c = openmc.Cell(fill=Depleted_Triso_Universe(), region= -sphere & Triso_BCC_Region())
         c.translation = center
 
         cells.append(c)
@@ -364,15 +369,15 @@ def void_space(void_fill):
     b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
     b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
     
-    region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Boundary_Region
+    region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4) & Triso_BCC_Region
 
     region = ~(region_pebbles| F_Blanket(S_316_borated).region)
 
-    voidcel = openmc.Cell(name='void',
+    voidcell = openmc.Cell(name='void',
                           region=region,
                           fill=void_fill)
 
-    return voidcel
+    return voidcell
 
 def Blanket_and_Pebble_Universe(void_fill,blanket):
     """
@@ -416,31 +421,6 @@ def Blanket_and_Pebble_Universe(void_fill,blanket):
 
 ###Constructs the cask and the MPC of the holtec 100, inside mpc 'universe' to be filled later within a sim file
 #everything will be in inches multipled by the conversion factor
-
-cm = 2.54 # 1-inch = 2.54cm
-
-def Boundary_Region():
-
-    """
-    Boundary region of a rectangle slightly larger than the cask
-    """
-
-    outer_cyl = openmc.ZCylinder(r=133/2 * cm, boundary_type='vacuum')
-    h0 = openmc.ZPlane(z0=0 * cm, boundary_type='vacuum')
-    hT = openmc.ZPlane(z0 = 231.75 *cm)
-
-    Region_cyl = -outer_cyl & +h0 & -hT
-
-    x1 = openmc.XPlane(x0 = -240/2 * cm, boundary_type='vacuum')
-    x2 = openmc.XPlane(x0 = 240/2 * cm, boundary_type='vacuum')
-    y1 = openmc.YPlane(y0 = -240/2 * cm, boundary_type='vacuum')
-    y2 = openmc.YPlane(y0 = 240/2 * cm, boundary_type='vacuum')
-    z0 = openmc.ZPlane(z0=-10 * cm, boundary_type='vacuum')
-    zT = openmc.ZPlane(z0=240 * cm, boundary_type='vacuum')
-
-    Region_rec = +x1 & -x2 & +y1 & -y2 & +z0 & -zT
-
-    return Region_rec
 
 def Outside_Cask(void_fill):
 
@@ -793,7 +773,7 @@ openmc.config['cross_sections'] = path
 
 #     return Region_rec
 
-def Boundary_Region():
+def Boundary_Region_cyl():
 
     """
     Boundary region of a rectangle slightly larger than the cask

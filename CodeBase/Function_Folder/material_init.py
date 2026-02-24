@@ -109,7 +109,7 @@ S_316_borated = openmc.Material(material_id=4, name='Fuel Basket')
 
 # B - whatever i want, but in practice around 1.5 w%o
 
-B_wo = 1.0 / 100
+B_wo = 1.0 
 
 S_316_borated.set_density('g/cm3',8.027)
 S_316_borated.add_element('C', 0.08 / 100 , percent_type='wo')
@@ -130,9 +130,9 @@ S_316_borated.add_element('Fe', 1 - (0.08 + 2 + 0.75 + 17 + 12 + 2.5 + 0.045 + 0
 #Ambient air
 air = openmc.Material(material_id=5, name='Air')
 air.set_density('g/cm3', 0.00120)
-air.add_element('N', 78.1 / 100, percent_type='wo')
-air.add_element('O', 20.95 / 100, percent_type='wo')
-air.add_element('Ar', 0.95 / 100, percent_type='wo')
+air.add_element('N', 78.1 / 100, percent_type='ao')
+air.add_element('O', 20.95 / 100, percent_type='ao')
+air.add_element('Ar', 0.95 / 100, percent_type='ao')
 
 
 #helium for inside cask at normal conditions
@@ -142,8 +142,8 @@ for m in materials_zoey:
         He = m
         break
 
-#accident case scenario where cask is submerged in water
-#Wouldnt it become steam?  
+
+### Accident scenario 
 water = openmc.Material(material_id=6, name='Water')
 water.set_density('g/cm3' , 1.00)
 water.add_element('H', 2, percent_type = 'ao')
@@ -158,6 +158,14 @@ water.add_element('O', 1, percent_type = 'ao')
 #                    A516_70.id : '#22223b',
 #                    S_316_borated.id : "#5c0110",
 #                    graphite.id : "#2B2828"}
+
+### uco
+fresh_fuel =openmc.materials(name='Fresh Fuel')
+fresh_fuel.set_density('g/cm3',10.4)
+fresh_fuel.add_nuclide("U235", 0.1386, percent_type='wo')
+fresh_fuel.add_nuclide("U238", 0.7559, percent_type='wo')
+fresh_fuel.add_nuclide("O", 0.06025, percent_type='wo')
+fresh_fuel.add_nuclide("C", 0.04523, percent_type='wo')
 
 
 depleted_fuel = None
@@ -190,6 +198,6 @@ for m in materials_zoey:
         PyC = m
         break
 
-materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC])
+materials = openmc.Materials([S_316_borated, Concrete, A516_70, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC, fresh_fuel])
 
 materials.export_to_xml('materials.xml')

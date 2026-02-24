@@ -4,7 +4,7 @@ from math import pi
 import numpy as np
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-materials_path = os.path.join(script_dir, "materials_zoey.xml")
+materials_path = os.path.join(script_dir,'Function_Folder', "materials_zoey.xml")
 materials_zoey = openmc.Materials.from_xml(materials_path)
 
 #### Importing Cross Sections
@@ -170,7 +170,7 @@ fuel_zone = openmc.Sphere(r=2.5)
 
 centers = openmc.model.pack_spheres(radius=outer_radius_particle,
                                     region=-fuel_zone,
-                                    pf=0.094,
+                                    pf=0.095,
                                     seed=621)
 
 print("Number of TRISOs:", len(centers))
@@ -200,18 +200,26 @@ graphite_zone = openmc.Cell(fill=graphite,
 
 Depleted_Triso_Universe = openmc.Universe(cells=[fuel_zone_cell,graphite_zone])
 
+UNIT_XY = 6.25
+UNIT_Z = 11.006257
+HALF_XY = UNIT_XY / 2 + 1e-6
+HALF_Z = UNIT_Z / 2
+
+bc = 'reflective'
+
 # Periodic_BC:
-z_top_bc = openmc.ZPlane(z0= 11.006257/2)
-z_bottom_bc = openmc.ZPlane(z0= -11.006257/2)
-z_top_bc.periodic_surface = z_bottom_bc
+z_top_bc = openmc.ZPlane(z0=HALF_Z, boundary_type=bc)
+z_bottom_bc = openmc.ZPlane(z0=-HALF_Z, boundary_type=bc)
+# z_top_bc.periodic_surface = z_bottom_bc
+# z_bottom_bc.periodic_surface = z_bottom_bc
 
-x_1_bc = openmc.XPlane(x0 = -6.25 / 2)
-x_2_bc = openmc.XPlane(x0 =  6.25 / 2)
-x_1_bc.periodic_surface = x_2_bc
+x_1_bc = openmc.XPlane(x0=-HALF_XY, boundary_type=bc)
+x_2_bc = openmc.XPlane(x0=HALF_XY, boundary_type=bc)
+# x_1_bc.periodic_surface = x_2_bc
 
-y_1_bc = openmc.YPlane(y0 =  -6.25 / 2)
-y_2_bc = openmc.YPlane(y0 =  6.25 / 2)
-y_1_bc.periodic_surface = y_2_bc
+y_1_bc = openmc.YPlane(y0=-HALF_XY, boundary_type=bc)
+y_2_bc = openmc.YPlane(y0=HALF_XY, boundary_type=bc)
+# y_1_bc.periodic_surface = y_2_bc
 
 Periodic_BC = +z_bottom_bc & -z_top_bc & +x_1_bc & -x_2_bc & +y_1_bc & -y_2_bc
 
@@ -313,15 +321,15 @@ def Triso_Pebbles():
     pebbles = [ 
         (openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0) , (0,0,0)),
         
-        (openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0) , (3.125, 3.125, 5.503)),
-        (openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0) , (-3.125, 3.125, 5.503)),
-        (openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0) , (-3.125, -3.125, 5.503)),
-        (openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0) , (3.125, -3.125, 5.503)),
+        (openmc.Sphere(x0=HALF_XY, y0=HALF_XY, z0=HALF_Z, r=3.0), (HALF_XY, HALF_XY, HALF_Z)),
+        (openmc.Sphere(x0=-HALF_XY, y0=HALF_XY, z0=HALF_Z, r=3.0), (-HALF_XY, HALF_XY, HALF_Z)),
+        (openmc.Sphere(x0=-HALF_XY, y0=-HALF_XY, z0=HALF_Z, r=3.0), (-HALF_XY, -HALF_XY, HALF_Z)),
+        (openmc.Sphere(x0=HALF_XY, y0=-HALF_XY, z0=HALF_Z, r=3.0), (HALF_XY, -HALF_XY, HALF_Z)),
 
-        (openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0) , (3.125, 3.125, -5.503)),
-        (openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0) , (-3.125, 3.125, -5.503)),
-        (openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0) , (-3.125, -3.125, -5.503)),
-        (openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0) , (3.125, -3.125, -5.503))]
+        (openmc.Sphere(x0=HALF_XY, y0=HALF_XY, z0=-HALF_Z, r=3.0), (HALF_XY, HALF_XY, -HALF_Z)),
+        (openmc.Sphere(x0=-HALF_XY, y0=HALF_XY, z0=-HALF_Z, r=3.0), (-HALF_XY, HALF_XY, -HALF_Z)),
+        (openmc.Sphere(x0=-HALF_XY, y0=-HALF_XY, z0=-HALF_Z, r=3.0), (-HALF_XY, -HALF_XY, -HALF_Z)),
+        (openmc.Sphere(x0=HALF_XY, y0=-HALF_XY, z0=-HALF_Z, r=3.0), (HALF_XY, -HALF_XY, -HALF_Z))]
     
     cells = []
 
@@ -343,15 +351,15 @@ def void_space(void_fill):
 
     Centered = openmc.Sphere(x0=0, y0=0, z0=0 , r =3.0)
     
-    t_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= 5.503, r =3.0)
-    t_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= 5.503, r =3.0)
-    t_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= 5.503, r =3.0)
+    t_1 = openmc.Sphere(x0=HALF_XY, y0=HALF_XY, z0=HALF_Z, r=3.0)
+    t_2 = openmc.Sphere(x0=-HALF_XY, y0=HALF_XY, z0=HALF_Z, r=3.0)
+    t_3 = openmc.Sphere(x0=-HALF_XY, y0=-HALF_XY, z0=HALF_Z, r=3.0)
+    t_4 = openmc.Sphere(x0=HALF_XY, y0=-HALF_XY, z0=HALF_Z, r=3.0)
 
-    b_1 = openmc.Sphere(x0=3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_2 = openmc.Sphere(x0=-3.125, y0=3.125, z0= -5.503, r =3.0)
-    b_3 = openmc.Sphere(x0=-3.125, y0=-3.125, z0= -5.503, r =3.0)
-    b_4 = openmc.Sphere(x0=3.125, y0=-3.125, z0= -5.503, r =3.0)
+    b_1 = openmc.Sphere(x0=HALF_XY, y0=HALF_XY, z0=-HALF_Z, r=3.0)
+    b_2 = openmc.Sphere(x0=-HALF_XY, y0=HALF_XY, z0=-HALF_Z, r=3.0)
+    b_3 = openmc.Sphere(x0=-HALF_XY, y0=-HALF_XY, z0=-HALF_Z, r=3.0)
+    b_4 = openmc.Sphere(x0=HALF_XY, y0=-HALF_XY, z0=-HALF_Z, r=3.0)
     
     region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4)
 
@@ -376,25 +384,24 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = 100000
+settings.particles = 50000
 settings.batches   = 1000
 settings.inactive  = 300
 settings.temperature = {'method': 'interpolation'}
 
 #box around BCC
-box = openmc.stats.Box(lower_left = (-6.25 / 2 ,-6.25 / 2 , 
-                                     -11.006257/2 ),
-                       upper_right = (6.25 / 2 ,6.25 / 2 , 
-                                     11.006257/2 ),)
+box = openmc.stats.Box(lower_left = (-HALF_XY, -HALF_XY, -HALF_Z),
+                       upper_right = (HALF_XY, HALF_XY, HALF_Z),)
 
 source = openmc.IndependentSource(space = box)
 settings.source = source
 
 mesh = openmc.RegularMesh()
 mesh.dimension = (3, 3, 11)
-mesh.lower_left =  (-6.25 / 2, -6.25 / 2 , -11.006257/2 )
-mesh.upper_right = (6.25 / 2,  6.25 / 2 , 11.006257/2 )
+mesh.lower_left =  (-HALF_XY, -HALF_XY, -HALF_Z)
+mesh.upper_right = (HALF_XY, HALF_XY, HALF_Z)
 
+settings.geometry_debug = True
 settings.entropy_mesh = mesh
 settings.export_to_xml()
 
@@ -411,17 +418,28 @@ def plots():
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
     plot2.origin = (0, 0, 0)
-    plot2.width = (6.25/2, 6.25/2 )
+    plot2.width = (6.25, 6.25)
     plot2.pixels = (1250, 1250)
     plot2.color_by = 'material'
     plot2.type = 'slice'
     plot2.filename = 'xy-slice-BCC.png'
 
-    plots = openmc.Plots([plot1,plot2])
+    plot3 = openmc.Plot()
+    plot3.basis = 'xy'
+    plot3.origin = (0, 0, 10.5/2)
+    plot3.width = (6.25, 6.25)
+    plot3.pixels = (1250, 1250)
+    plot3.color_by = 'material'
+    plot3.type = 'slice'
+    plot3.filename = 'xy-slice-BCC-top.png'
+
+    plots = openmc.Plots([plot1,plot2,plot3])
     plots.export_to_xml()
     openmc.plot_geometry()
 
-plots()
-# openmc.run()
-# sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
-# print("k-effective =", sp.k_combined)
+
+
+#plots()
+openmc.run()
+sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
+print("k-effective =", sp.k_combined)

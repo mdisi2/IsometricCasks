@@ -667,11 +667,11 @@ def MPC_Inside(mpc_void_fill=He, blanket_material=S_316_borated):
 
     Void_Region = -void_cyl & -void_top & +void_base
 
-    voidcel = openmc.Cell(name='Inside_MPC',
+    voidcell = openmc.Cell(name='Inside_MPC',
                           region=Void_Region,
                           fill = BCC)
     
-    return voidcel
+    return voidcell
 
 def MPC_Inside_Region():
 

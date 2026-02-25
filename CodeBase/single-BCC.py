@@ -383,9 +383,9 @@ geometry.export_to_xml()
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
-settings.particles = 2000
-settings.batches   = 7000
-settings.inactive  = 200
+settings.particles = 20000
+settings.batches   = 100
+settings.inactive  = 20
 settings.temperature = {'method': 'interpolation'}
 
 #box around BCC
@@ -436,9 +436,7 @@ def plots():
     plots.export_to_xml()
     openmc.plot_geometry()
 
-
-
 #plots()
-openmc.run()
+openmc.run(mpi_args=['mpiexec', '-n', '4'])
 sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
 print("k-effective =", sp.k_combined)

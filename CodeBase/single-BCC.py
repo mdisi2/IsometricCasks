@@ -88,7 +88,7 @@ air.add_element('Ar', 0.95 / 100, percent_type='wo')
 #Argon 
 
 Ar = openmc.Material(name='Argon')
-Ar.add_density('g/cm3', 0.0017837)
+Ar.set_density('g/cm3', 0.0017837)
 Ar.add_element('Ar',100/100,percent_type='ao')
 
 #helium for inside cask at normal conditions

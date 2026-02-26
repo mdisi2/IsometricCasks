@@ -95,6 +95,14 @@
     <nuclide name="Ar38" wo="5.678568377775435e-06"/>
     <nuclide name="Ar40" wo="0.00946578710731566"/>
   </material>
+  <material id="6" name="Water">
+    <density value="1.0" units="g/cm3"/>
+    <nuclide name="H1" ao="1.99968852"/>
+    <nuclide name="H2" ao="0.00031148"/>
+    <nuclide name="O16" ao="0.9976206"/>
+    <nuclide name="O17" ao="0.000379"/>
+    <nuclide name="O18" ao="0.0020004"/>
+  </material>
   <material id="1000" name="depleted kernel" temperature="1159.15">
     <density value="10.400000000000002" units="g/cm3"/>
     <nuclide name="H1" ao="5.799736036128579e-09"/>

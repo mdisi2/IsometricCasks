@@ -85,6 +85,11 @@ air.add_element('N', 78.1 / 100, percent_type='wo')
 air.add_element('O', 20.95 / 100, percent_type='wo')
 air.add_element('Ar', 0.95 / 100, percent_type='wo')
 
+#Argon 
+
+Ar = openmc.Material(name='Argon')
+Ar.add_density('g/cm3', 0.0017837)
+Ar.add_element('Ar',100/100,percent_type='ao')
 
 #helium for inside cask at normal conditions
 He  = None
@@ -144,7 +149,7 @@ assert graphite is not None
 assert depleted_fuel is not None
 assert He is not None 
 
-materials = openmc.Materials([S_316_borated, S_316, air, He, graphite, depleted_fuel, buffer, PyC, SiC,uco])
+materials = openmc.Materials([S_316, air, graphite, depleted_fuel, buffer, PyC, SiC,uco, water,He,Ar])
 materials.export_to_xml()
 
 ### This is appropriated from the OpenMC triso particle example page
@@ -155,13 +160,13 @@ materials.export_to_xml()
 
 spheres = [openmc.Sphere(r=r*1e-4) for r in [215.,315.,350.,385.]]
 
-cells = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]),
+cells1 = [openmc.Cell(fill=depleted_fuel, region=-spheres[0]), #this line for fuel
          openmc.Cell(fill=buffer, region=+spheres[0] & -spheres[1]),
          openmc.Cell(fill=PyC, region=+spheres[1] & -spheres[2]),
          openmc.Cell(fill=SiC, region=+spheres[2] & -spheres[3]),
          openmc.Cell(fill=PyC, region=+spheres[3])]
 
-triso_univ = openmc.Universe(cells=cells)
+triso_univ = openmc.Universe(cells=cells1)
 
 outer_radius_particle = 0.0425
 
@@ -343,8 +348,6 @@ def Triso_Pebbles():
 def void_space(void_fill):
 
     """
-    :input basket: the cell of the basket
-    :type basket: 
     :input void_fill: the material that is not filled by a pebble or the basket, should be helium or water in accident scenario  
     """
 
@@ -372,7 +375,7 @@ def void_space(void_fill):
 
 Blanket = F_Blanket(S_316)
 Pebbles = Triso_Pebbles()
-Coolant = void_space(He)
+Coolant = void_space(Ar)
 
 
 cells = [Blanket,*Pebbles,Coolant]
@@ -440,3 +443,4 @@ def plots():
 openmc.run(mpi_args=['mpiexec', '-n', '4'])
 sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
 print("k-effective =", sp.k_combined)
+print('non-borated blanket with depleted fuel and argon')

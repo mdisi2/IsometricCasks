@@ -1,0 +1,28 @@
+
+ =======================>     TIMING STATISTICS     <=======================
+
+ Total time for initialization     = 7.1235e+01 seconds
+   Reading cross sections          = 5.8988e+01 seconds
+ Total time in simulation          = 2.6070e+03 seconds
+   Time in transport only          = 2.6035e+03 seconds
+   Time in inactive batches        = 5.1684e+02 seconds
+   Time in active batches          = 2.0901e+03 seconds
+   Time synchronizing fission bank = 3.4297e+00 seconds
+     Sampling source sites         = 4.3297e-02 seconds
+     SEND/RECV source sites        = 4.5836e-03 seconds
+   Time accumulating tallies       = 4.7098e-04 seconds
+   Time writing statepoints        = 4.1792e-03 seconds
+ Total time for finalization       = 2.3530e-06 seconds
+ Total time elapsed                = 2.6787e+03 seconds
+ Calculation Rate (inactive)       = 773.935 particles/second
+ Calculation Rate (active)         = 765.507 particles/second
+
+ ============================>     RESULTS     <============================
+
+ k-effective (Collision)     = 0.44534 +/- 0.00070
+ k-effective (Track-length)  = 0.44468 +/- 0.00052
+ k-effective (Absorption)    = 0.44521 +/- 0.00075
+ Combined k-effective        = 0.44483 +/- 0.00047
+ Leakage Fraction            = 0.00000 +/- 0.00000
+
+k-effective = 0.4448+/-0.0005

@@ -2,6 +2,9 @@ import openmc
 import os
 from math import pi
 import numpy as np
+import matplotlib.pyplot as plt
+import h5py
+
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 materials_path = os.path.join(script_dir,'Function_Folder', "materials_zoey.xml")
@@ -391,6 +394,18 @@ settings.batches   = 100
 settings.inactive  = 20
 settings.temperature = {'method': 'interpolation'}
 
+# energy bins
+E_bins = np.logspace(-5, 7.2, 400)
+
+energy_filter = openmc.EnergyFilter(E_bins)
+
+spec_tally = openmc.Tally(name='neutron_spectrum')
+spec_tally.filters = [energy_filter]
+spec_tally.scores  = ['flux']
+
+tallies = openmc.Tallies([spec_tally])
+tallies.export_to_xml()
+
 #box around BCC
 box = openmc.stats.Box(lower_left = (-HALF_XY, -HALF_XY, -HALF_Z),
                        upper_right = (HALF_XY, HALF_XY, HALF_Z),)
@@ -415,7 +430,7 @@ def plots():
     plot1.pixels = (1250, 2200)
     plot1.color_by = 'material'
     plot1.type = 'slice'
-    plot1.filename = 'xz-slice-BCC.png'
+    plot1.filename = 'pictures/xz-slice-BCC.png'
 
     plot2 = openmc.Plot()
     plot2.basis = 'xy'
@@ -424,7 +439,7 @@ def plots():
     plot2.pixels = (1250, 1250)
     plot2.color_by = 'material'
     plot2.type = 'slice'
-    plot2.filename = 'xy-slice-BCC.png'
+    plot2.filename = 'pictures/xy-slice-BCC.png'
 
     plot3 = openmc.Plot()
     plot3.basis = 'xy'
@@ -433,7 +448,7 @@ def plots():
     plot3.pixels = (1250, 1250)
     plot3.color_by = 'material'
     plot3.type = 'slice'
-    plot3.filename = 'xy-slice-BCC-top.png'
+    plot3.filename = 'pictures/xy-slice-BCC-top.png'
 
     plots = openmc.Plots([plot1,plot2,plot3])
     plots.export_to_xml()
@@ -443,4 +458,30 @@ def plots():
 openmc.run(mpi_args=['mpiexec', '-n', '4'])
 sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
 print("k-effective =", sp.k_combined)
-print('non-borated blanket with depleted fuel and argon')
+
+string = ['non-borated blanket', 'depleted pebbles' , 'helium']
+print(string)
+
+### Plotting Spectra 
+
+sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
+t = sp.get_tally(name='spectrum')
+
+flux = t.mean.flatten()
+
+E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
+dlnE  = np.log(E_bins[1:] / E_bins[:-1])
+
+# flux per lethargy
+flux_lethargy = flux / dlnE
+
+plt.figure()
+plt.loglog(E_mid, flux_lethargy)
+plt.xlabel("Energy [eV]")
+plt.ylabel("Flux/lethargy")
+plt.title(f"Neutron Spectrum")
+plt.grid(True, alpha=0.5)
+plt.axvline(1)
+plt.tight_layout()
+plt.savefig(f'{string[0]}_{string[1]}_{string[2]}_spectrum.png',dpi=600)
+plt.show()

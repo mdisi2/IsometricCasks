@@ -2,7 +2,9 @@ import openmc
 import matplotlib.pyplot as plt
 import numpy as np
 
-sp = openmc.StatePoint('statepoint.100w.h5')
+sp = openmc.StatePoint('statepoint.100.h5')
+t = sp.get_tally(name='neutron_spectrum')
+
 t = sp.get_tally(name='neutron_spectrum')
 
 flux = t.mean.flatten()
@@ -15,8 +17,8 @@ E_bins = np.concatenate(([bins[0,0]], bins[:,1]))
 E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
 dlnE  = np.log(E_bins[1:] / E_bins[:-1])
 
-# flux_lethargy = flux / dlnE
-# flux_lethargy /= np.sum(flux_lethargy * dlnE)
+flux_lethargy = flux / dlnE
+flux_lethargy /= np.sum(flux_lethargy * dlnE)
 
 plt.figure()
 plt.loglog(E_mid, flux)
@@ -24,9 +26,9 @@ plt.xlabel("Energy [eV]")
 plt.ylabel("Normalized Flux / lethargy")
 plt.xscale('log')
 plt.yscale('log')
-plt.title("Neutron Spectrum")
+plt.title("Neutron Spectrum Submersion HAC")
 plt.grid(True, alpha=0.5)
 plt.axvline(1)
 plt.tight_layout()
-plt.savefig('flux_spectrum.png', dpi=600)
+plt.savefig('flux_spectrum_water.png', dpi=600)
 plt.show()

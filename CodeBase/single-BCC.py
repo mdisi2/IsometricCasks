@@ -379,15 +379,12 @@ Pebbles = Triso_Pebbles()
 Coolant = void_space(water)
 
 
-cells = [Blanket,*Pebbles, Coolant]
+cells = [Blanket, *Pebbles, Coolant]
 root_universe = openmc.Universe(cells=cells)
-geometry = openmc.Geometry(root_universe)
-root_cell = openmc.Cell(region=Periodic_BC,
-                        fill=root_universe)
-final_universe = openmc.Universe(cells=[root_cell])
-geometry = openmc.Geometry(final_universe)
+root_cell = openmc.Cell(region=Periodic_BC, fill=root_universe) #applies BC
+BCC_universe = openmc.Universe(cells=[root_cell])
+geometry = openmc.Geometry(BCC_universe)
 geometry.export_to_xml()
-
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
@@ -404,7 +401,7 @@ energy_filter = openmc.EnergyFilter(E_bins)
 spec_tally = openmc.Tally(name='neutron_spectrum')
 spec_tally.filters = [energy_filter]
 spec_tally.scores  = ['flux']
-
+spec_tally.filters.append(openmc.UniverseFilter(root_universe))
 tallies = openmc.Tallies([spec_tally])
 tallies.export_to_xml()
 

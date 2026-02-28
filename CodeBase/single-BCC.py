@@ -3,8 +3,6 @@ import os
 from math import pi
 import numpy as np
 import matplotlib.pyplot as plt
-import h5py
-
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 materials_path = os.path.join(script_dir,'Function_Folder', "materials_zoey.xml")
@@ -152,7 +150,7 @@ assert graphite is not None
 assert depleted_fuel is not None
 assert He is not None 
 
-materials = openmc.Materials([S_316, air, graphite, depleted_fuel, buffer, PyC, SiC,uco, water,He,Ar])
+materials = openmc.Materials([S_316, air, graphite, depleted_fuel, buffer, PyC, SiC,uco, water,He])
 materials.export_to_xml()
 
 ### This is appropriated from the OpenMC triso particle example page
@@ -268,7 +266,7 @@ def F_Blanket(basket=S_316):
 
 
     frame = openmc.Cell(name='basket',
-                        region = (frame_region_yz | frame_region_xz) & Periodic_BC,
+                        region = (frame_region_yz | frame_region_xz),
                         fill = basket) 
     
     return frame
@@ -308,7 +306,7 @@ def SBlanket_Region():
     frame_region_yz = ~cut_yz.region & frame_yz.region
 
 
-    frame = (frame_region_yz | frame_region_xz) & Periodic_BC 
+    frame = (frame_region_yz | frame_region_xz)
     
     return frame
 
@@ -341,7 +339,7 @@ def Triso_Pebbles():
     cells = []
 
     for sphere, center in pebbles:
-        c = openmc.Cell(fill=Depleted_Triso_Universe, region= -sphere & Periodic_BC)
+        c = openmc.Cell(fill=Depleted_Triso_Universe, region= -sphere)
         c.translation = center
 
         cells.append(c)
@@ -368,7 +366,7 @@ def void_space(void_fill):
     
     region_pebbles = (-Centered | -t_1 | -t_2 | -t_3 | -t_4 | -b_1 | -b_2 | -b_3 | -b_4)
 
-    region = ~(region_pebbles| SBlanket_Region()) & Periodic_BC
+    region = ~(region_pebbles| SBlanket_Region())
 
     voidcell = openmc.Cell(name='void',
                           region=region,
@@ -378,14 +376,18 @@ def void_space(void_fill):
 
 Blanket = F_Blanket(S_316)
 Pebbles = Triso_Pebbles()
-Coolant = void_space(Ar)
+Coolant = void_space(water)
 
 
-cells = [Blanket,*Pebbles,Coolant]
+cells = [Blanket,*Pebbles, Coolant]
 root_universe = openmc.Universe(cells=cells)
-
 geometry = openmc.Geometry(root_universe)
+root_cell = openmc.Cell(region=Periodic_BC,
+                        fill=root_universe)
+final_universe = openmc.Universe(cells=[root_cell])
+geometry = openmc.Geometry(final_universe)
 geometry.export_to_xml()
+
 
 settings = openmc.Settings()
 settings.run_mode = 'eigenvalue'
@@ -456,32 +458,32 @@ def plots():
 
 #plots()
 openmc.run(mpi_args=['mpiexec', '-n', '4'])
-sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
+sp = openmc.StatePoint(f'statepoint.100.h5')
 print("k-effective =", sp.k_combined)
 
-string = ['non-borated blanket', 'depleted pebbles' , 'helium']
+string = ['non-borated blanket', 'depleted pebbles' , 'water']
 print(string)
 
-### Plotting Spectra 
+# ### Plotting Spectra 
 
-sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
-t = sp.get_tally(name='spectrum')
+# sp = openmc.StatePoint(f'statepoint.h5')
+# t = sp.get_tally(name='neutron_spectrum')
 
-flux = t.mean.flatten()
+# flux = t.mean.flatten()
 
-E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
-dlnE  = np.log(E_bins[1:] / E_bins[:-1])
+# E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
+# dlnE  = np.log(E_bins[1:] / E_bins[:-1])
 
-# flux per lethargy
-flux_lethargy = flux / dlnE
+# # flux per lethargy
+# flux_lethargy = flux / dlnE
 
-plt.figure()
-plt.loglog(E_mid, flux_lethargy)
-plt.xlabel("Energy [eV]")
-plt.ylabel("Flux/lethargy")
-plt.title(f"Neutron Spectrum")
-plt.grid(True, alpha=0.5)
-plt.axvline(1)
-plt.tight_layout()
-plt.savefig(f'{string[0]}_{string[1]}_{string[2]}_spectrum.png',dpi=600)
-plt.show()
+# plt.figure()
+# plt.loglog(E_mid, flux)
+# plt.xlabel("Energy [eV]")
+# plt.ylabel("Flux")
+# plt.title(f"Neutron Spectrum")
+# plt.grid(True, alpha=0.5)
+# plt.axvline(1)
+# plt.tight_layout()
+# plt.savefig(f'{string[0]}_{string[1]}_{string[2]}_spectrum.png',dpi=600)
+# plt.show()

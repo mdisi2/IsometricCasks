@@ -1,0 +1,29 @@
+ =======================>     TIMING STATISTICS     <=======================
+
+ Total time for initialization     = 6.3003e+01 seconds
+   Reading cross sections          = 5.0485e+01 seconds
+ Total time in simulation          = 3.7527e+03 seconds
+   Time in transport only          = 3.7358e+03 seconds
+   Time in inactive batches        = 7.4357e+02 seconds
+   Time in active batches          = 3.0091e+03 seconds
+   Time synchronizing fission bank = 1.6839e+01 seconds
+     Sampling source sites         = 4.2940e-02 seconds
+     SEND/RECV source sites        = 4.4057e-03 seconds
+   Time accumulating tallies       = 3.4740e-04 seconds
+   Time writing statepoints        = 4.1733e-03 seconds
+ Total time for finalization       = 2.3060e-06 seconds
+ Total time elapsed                = 3.8160e+03 seconds
+ Calculation Rate (inactive)       = 537.947 particles/second
+ Calculation Rate (active)         = 531.716 particles/second
+
+ ============================>     RESULTS     <============================
+
+ k-effective (Collision)     = 0.31388 +/- 0.00040
+ k-effective (Track-length)  = 0.31430 +/- 0.00034
+ k-effective (Absorption)    = 0.31374 +/- 0.00050
+ Combined k-effective        = 0.31411 +/- 0.00028
+ Leakage Fraction            = 0.00000 +/- 0.00000
+
+/home/matthewdisimone/miniconda3/envs/openmc-env/lib/python3.13/site-packages/openmc/statepoint.py:285: FutureWarning: The 'k_combined' property has been renamed to 'keff' and will be removed in a future version of OpenMC.
+  warnings.warn(
+k-effective = 0.31411+/-0.00028

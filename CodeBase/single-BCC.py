@@ -150,7 +150,7 @@ assert graphite is not None
 assert depleted_fuel is not None
 assert He is not None 
 
-materials = openmc.Materials([S_316, air, graphite, depleted_fuel, buffer, PyC, SiC,uco, water,He])
+materials = openmc.Materials([S_316, air, graphite, depleted_fuel, buffer, PyC, SiC,uco, water,He,S_316_borated])
 materials.export_to_xml()
 
 ### This is appropriated from the OpenMC triso particle example page
@@ -374,10 +374,9 @@ def void_space(void_fill):
 
     return voidcell
 
-Blanket = F_Blanket(S_316)
+Blanket = F_Blanket(S_316_borated)
 Pebbles = Triso_Pebbles()
 Coolant = void_space(water)
-
 
 cells = [Blanket, *Pebbles, Coolant]
 root_universe = openmc.Universe(cells=cells)
@@ -458,29 +457,29 @@ openmc.run(mpi_args=['mpiexec', '-n', '4'])
 sp = openmc.StatePoint(f'statepoint.100.h5')
 print("k-effective =", sp.k_combined)
 
-string = ['non-borated blanket', 'depleted pebbles' , 'water']
+string = ['borated blanket', 'depleted pebbles' , 'water']
 print(string)
+sp = openmc.StatePoint('statepoint.100.h5')
+t = sp.get_tally(name='neutron_spectrum')
+t = sp.get_tally(name='neutron_spectrum')
+flux = t.mean.flatten()
+energy_filter = [f for f in t.filters if isinstance(f, openmc.EnergyFilter)][0]
+bins = np.array(energy_filter.bins)
+E_bins = np.concatenate(([bins[0,0]], bins[:,1]))
+E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
+dlnE  = np.log(E_bins[1:] / E_bins[:-1])
+flux_lethargy = flux / dlnE
+flux_lethargy /= np.sum(flux_lethargy * dlnE)
 
-# ### Plotting Spectra 
-
-# sp = openmc.StatePoint(f'statepoint.h5')
-# t = sp.get_tally(name='neutron_spectrum')
-
-# flux = t.mean.flatten()
-
-# E_mid = 0.5 * (E_bins[:-1] + E_bins[1:])
-# dlnE  = np.log(E_bins[1:] / E_bins[:-1])
-
-# # flux per lethargy
-# flux_lethargy = flux / dlnE
-
-# plt.figure()
-# plt.loglog(E_mid, flux)
-# plt.xlabel("Energy [eV]")
-# plt.ylabel("Flux")
-# plt.title(f"Neutron Spectrum")
-# plt.grid(True, alpha=0.5)
-# plt.axvline(1)
-# plt.tight_layout()
-# plt.savefig(f'{string[0]}_{string[1]}_{string[2]}_spectrum.png',dpi=600)
-# plt.show()
+plt.figure()
+plt.loglog(E_mid, flux)
+plt.xlabel("Energy [eV]")
+plt.ylabel("Normalized Flux / lethargy")
+plt.xscale('log')
+plt.yscale('log')
+plt.title("Neutron Spectrum Borated with HAC")
+plt.grid(True, alpha=0.5)
+plt.axvline(1)
+plt.tight_layout()
+plt.savefig('flux_spectrum_borated_waterHAC.png', dpi=600)
+plt.show()

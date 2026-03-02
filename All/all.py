@@ -9,7 +9,7 @@ mpl.rcParams['font.family'] = 'Serif'
 # for f in fm.findSystemFonts(fontpaths=None):
 #     print(fm.FontProperties(fname=f).get_name())
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(465/46.5,240/46.5))
 
 path1 = 'All/statepoint.100.h5'
 path2 = 'All/statepoint.100borated.h5'
@@ -19,9 +19,9 @@ path4 = 'All/statepoint.100boratedwater.h5'
 
 path = [path1,path2,path3,path4]
 
-Names = ["NC" , "NC - Borated Blanket" , 'HAC' , "HAC - Borated Blanket"]
+Names = ["NC | Helium" , "NC | Borated Blanket" , 'HAC | Water' , "HAC | Borated Blanket"]
 
-Color = ['Orange','orange','blue','blue']
+Color = ['#FC8403','#FC8403','blue','blue']
 
 Style = ['-','--','-','--']
 
@@ -45,13 +45,13 @@ for i in range(len(Names)):
 
 
 plt.xlabel(r"Energy [eV]")
-plt.ylabel(r"Normalized Flux / lethargy")
+plt.ylabel(r"Normalized Flux / Lethargy")
 plt.ylim(10**(-7))
-plt.title(r"Neutron Spectra" , fontsize=20) 
+#plt.title(r"Neutron Spectra" , fontsize=20) 
 plt.grid(True, alpha=0.5)
 plt.axvline(1,linestyle=':',color='black',lw=0.5)
 plt.axvline(10e3,linestyle=':',color='black',lw=0.5)
 plt.legend()
 plt.tight_layout()
-plt.savefig('flux_spectrum_combined.png', dpi=600)
+plt.savefig('flux_spectrum_combined222.png', dpi=600)
 plt.show()

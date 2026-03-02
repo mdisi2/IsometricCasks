@@ -374,9 +374,9 @@ def void_space(void_fill):
 
     return voidcell
 
-Blanket = F_Blanket(S_316_borated)
+Blanket = F_Blanket(S_316)
 Pebbles = Triso_Pebbles()
-Coolant = void_space(water)
+Coolant = void_space(He)
 
 cells = [Blanket, *Pebbles, Coolant]
 root_universe = openmc.Universe(cells=cells)

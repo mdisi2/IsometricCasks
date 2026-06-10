@@ -1,5 +1,4 @@
-# IsometricCasks
-OpenMC storage for my isometric triso pebble casks
+# OpenMC Cask Criticality Analysis of Novel TRISO-Pebble Cask Design
 
 ![Poster](./Roy%20G%20Post%20Poster.png)
 
